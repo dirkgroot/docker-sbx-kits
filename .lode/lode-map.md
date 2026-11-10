@@ -15,6 +15,7 @@ Index of all lode files. Start here in every new session; read [summary.md](summ
 - [kits/agent-context.md](kits/agent-context.md) — injects the personal INTJ `AGENTS.md`.
 - [kits/git-identity-sign.md](kits/git-identity-sign.md) — Git identity + SSH commit signing.
 - [kits/mise-en-place.md](kits/mise-en-place.md) — installs and activates the `mise` tool manager.
+- [kits/fish-starship.md](kits/fish-starship.md) — installs fish + starship prompt, makes fish the login shell.
 
 ## plans/
 

@@ -1,0 +1,77 @@
+# syntax=docker/sandbox-kit:3
+schemaVersion: "3"
+kind: mixin
+displayName: Fish shell and Starship prompt
+
+capabilities:
+  - type: com.docker.sandbox/lifecycle@1
+    config:
+      install:
+        - command: |
+            grep -qx /usr/local/bin/fish /etc/shells 2>/dev/null || printf '%s\n' /bin/sh /bin/bash /usr/local/bin/fish >> /etc/shells
+            usermod -s /usr/local/bin/fish agent
+        - command: |
+            grep -qs '^export SHELL=' /etc/sandbox-persistent.sh || printf 'export SHELL=/usr/local/bin/fish\n' >> /etc/sandbox-persistent.sh
+          user: "1000"
+      files:
+        - path: /home/agent/.config/fish/config.fish
+          overwrite: false
+          content: |
+            starship init fish | source
+        - path: /home/agent/.config/fish/conf.d/colors.fish
+          overwrite: false
+          content: |
+            set -gx LSCOLORS "Gxfxcxdxbxegedabagacad"
+            set -gx LS_COLORS "di=1;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43"
+        - path: /home/agent/.config/fish/conf.d/fish_frozen_theme.fish
+          overwrite: false
+          content: |
+            set --global fish_color_autosuggestion 969896
+            set --global fish_color_cancel --reverse
+            set --global fish_color_command c397d8
+            set --global fish_color_comment e7c547
+            set --global fish_color_cwd green
+            set --global fish_color_cwd_root red
+            set --global fish_color_end c397d8
+            set --global fish_color_error d54e53
+            set --global fish_color_escape 00a6b2
+            set --global fish_color_history_current --bold
+            set --global fish_color_host normal
+            set --global fish_color_host_remote
+            set --global fish_color_keyword
+            set --global fish_color_match --background=brblue
+            set --global fish_color_normal normal
+            set --global fish_color_operator 00a6b2
+            set --global fish_color_option
+            set --global fish_color_param 7aa6da
+            set --global fish_color_quote b9ca4a
+            set --global fish_color_redirection 70c0b1
+            set --global fish_color_search_match white --background=brblack
+            set --global fish_color_selection white --bold --background=brblack
+            set --global fish_color_status red
+            set --global fish_color_user brgreen
+            set --global fish_color_valid_path --underline
+            set --global fish_pager_color_background
+            set --global fish_pager_color_completion normal
+            set --global fish_pager_color_description B3A06D
+            set --global fish_pager_color_prefix normal --bold --underline
+            set --global fish_pager_color_progress brwhite --background=cyan
+            set --global fish_pager_color_secondary_background
+            set --global fish_pager_color_secondary_completion
+            set --global fish_pager_color_secondary_description
+            set --global fish_pager_color_secondary_prefix
+            set --global fish_pager_color_selected_background --background=brblack
+            set --global fish_pager_color_selected_completion
+            set --global fish_pager_color_selected_description
+            set --global fish_pager_color_selected_prefix
+        - path: /home/agent/.config/fish/conf.d/fish_frozen_key_bindings.fish
+          overwrite: false
+          content: |
+            set --erase --universal fish_key_bindings
+        - path: /home/agent/.config/starship.toml
+          overwrite: false
+          content: |
+            # Get editor completions based on the config schema
+            "$schema" = 'https://starship.rs/config-schema.json'
+            
+            add_newline = false
