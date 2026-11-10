@@ -13,7 +13,6 @@ Index of all lode files. Start here in every new session; read [summary.md](summ
 
 - [kits/summary.md](kits/summary.md) — kit catalog and how kits compose into a sandbox.
 - [kits/agent-context.md](kits/agent-context.md) — injects the personal INTJ `AGENTS.md`.
-- [kits/dev-port.md](kits/dev-port.md) — publishes a dev-server port to the host.
 - [kits/git-identity-sign.md](kits/git-identity-sign.md) — Git identity + SSH commit signing.
 - [kits/mise-en-place.md](kits/mise-en-place.md) — installs and activates the `mise` tool manager.
 

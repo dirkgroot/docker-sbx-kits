@@ -1,12 +1,11 @@
 # Kits — catalog
 
-All four kits are `kind: mixin` manifests at `schemaVersion: 3`. A sandbox is assembled from one or more
+All three kits are `kind: mixin` manifests at `schemaVersion: 3`. A sandbox is assembled from one or more
 kits; the `sbx` runtime applies each capability, substituting kit args into capability config.
 
 | Kit | DisplayName | Args (required) | Capabilities | Files |
 |---|---|---|---|---|
 | [agent-context](agent-context.md) | My personal AGENTS.md | — | `agent-context@1` | `agent-context.yaml` |
-| [dev-port](dev-port.md) | Development server host port | `port` | `port@1` | `dev-port.yaml` |
 | [git-identity-sign](git-identity-sign.md) | Git identity and commit signing | `git_user_name`, `git_user_email`, `git_user_signingKey` | `ssh-agent@1`, `lifecycle@1` | `git-identity-sign.yaml` |
 | [mise-en-place](mise-en-place.md) | Mise en place mixin | — | `network-policy@2`, `lifecycle@1` | `mise-en-place.yaml`, `mise-en-place.dockerfile` |
 
@@ -17,7 +16,6 @@ flowchart LR
     user["sbx (host CLI)"] -->|"kit + args"| manifest["kit manifest<br/>schemaVersion 3, kind: mixin"]
     manifest --> caps["capabilities[]"]
     caps --> ac["agent-context@1<br/>writes AGENTS.md"]
-    caps --> port["port@1<br/>publishes port"]
     caps --> ssh["ssh-agent@1<br/>sign + authenticate"]
     caps --> life["lifecycle@1<br/>install + startup hooks"]
     caps --> net["network-policy@2<br/>egress allowlist"]
