@@ -5,7 +5,7 @@ Patterns this repo follows, plus rules inherited from the root [AGENTS.md](../AG
 ## Kit authoring
 
 - One kit per directory; directory name = kit name; manifest at `<name>/<name>.yaml`.
-- Every manifest opens with `# syntax=docker/sandbox-kit:3`, then `schemaVersion: "3"`, `kind: mixin`, `displayName`.
+- Every manifest opens with `# syntax=docker/sandbox-kit:3`, then a `# yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json` modeline (the `# syntax=` line must stay first), then `schemaVersion: "3"`, `kind: mixin`, `displayName`.
 - Pin capability majors explicitly (`@1`, `@2`) — the version is part of the contract.
 - Declare every consumed value as a kit arg with `required: true` and an accurate `description`; interpolate with `${{ kit.args.NAME }}`.
 - Prefer `lifecycle` hooks over bespoke entrypoint scripts: Dockerfile for image-time setup, `install` hooks once at sandbox creation (root by default; `user: "1000"` for agent-user work), `startup` hooks per boot.

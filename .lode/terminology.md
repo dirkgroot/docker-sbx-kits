@@ -4,7 +4,7 @@ Short entries: **term — meaning**.
 
 - **Kit** — A reusable mixin package that customizes a Docker Sandbox; one directory per kit, manifest at `<kit>/<kit>.yaml`.
 - **Mixin** — The `kind` of every kit in this repo: layers capabilities onto a sandbox instead of defining a base image.
-- **Manifest** — A kit's YAML file, opening with the `# syntax=docker/sandbox-kit:3` header, then `schemaVersion: "3"`, `kind`, `displayName`.
+- **Manifest** — A kit's YAML file, opening with the `# syntax=docker/sandbox-kit:3` header, then the `# yaml-language-server:` modeline pointing at `docker/sandbox-kit-spec`'s `schema/kit.schema.json` (editor validation/completion), then `schemaVersion: "3"`, `kind`, `displayName`.
 - **Capability** — A typed unit of sandbox customization, id `com.docker.sandbox/<type>@<major>`, listed under `capabilities:`. Types in use: `agent-context@1`, `ssh-agent@1`, `lifecycle@1`, `network-policy@2`.
 - **Kit arg** — A parameter declared under `args:` and supplied when the kit is used; referenced as `${{ kit.args.NAME }}`.
 - **Lifecycle capability** — Runs shell commands: `install` hooks once at sandbox creation (before the agent launches, as root by default; `user: "1000"` demotes), `startup` hooks on every sandbox boot. Also carries `files`: per-user config written as UID 1000 at creation, after install hooks.
