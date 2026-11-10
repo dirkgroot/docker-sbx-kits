@@ -69,6 +69,16 @@ capabilities:
           overwrite: false
           content: |
             set --erase --universal fish_key_bindings
+        - path: /home/agent/.config/fish/conf.d/abbreviations.fish
+          overwrite: false
+          content: |
+            abbr --add dps "docker ps"
+            abbr --add dpsa "docker ps -a"
+            abbr --add di "docker images"
+            abbr --add dsp "docker system prune"
+            abbr --add dspv "docker system prune --volumes"
+            abbr --add dspa "docker system prune --all"
+            abbr --add kns "kubens"
         - path: /home/agent/.config/starship.toml
           overwrite: false
           content: |

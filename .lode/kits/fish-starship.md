@@ -6,9 +6,9 @@ creation, and makes fish the login shell of the `agent` user.
 ## Files
 
 - [fish-starship.yaml](../../fish-starship/fish-starship.yaml) — manifest: one `lifecycle@1` capability with
-  two `install` hooks (root: shell registration; agent: `SHELL` export) and five lifecycle `files` entries:
-  `config.fish`, `starship.toml`, and three `conf.d` drop-ins (`colors`, `fish_frozen_theme`,
-  `fish_frozen_key_bindings`).
+  two `install` hooks (root: shell registration; agent: `SHELL` export) and six lifecycle `files` entries:
+  `config.fish`, `starship.toml`, and four `conf.d` drop-ins (`colors`, `fish_frozen_theme`,
+  `fish_frozen_key_bindings`, `abbreviations` with docker/`kubens` abbreviations).
 - [fish-starship.dockerfile](../../fish-starship/fish-starship.dockerfile) — two-stage build shipping both
   binaries; same pattern as [mise-en-place](mise-en-place.md).
 
