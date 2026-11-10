@@ -1,0 +1,14 @@
+# syntax=docker/sandbox-kit:3
+schemaVersion: "3"
+kind: mixin
+displayName: Development server host port
+
+args:
+  port:
+    required: true
+
+capabilities:
+  - type: com.docker.sandbox/port@1
+    config:
+      container: ${{ kit.args.port }}
+      transport: tcp

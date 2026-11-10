@@ -1,0 +1,32 @@
+# syntax=docker/sandbox-kit:3
+schemaVersion: "3"
+kind: mixin
+displayName: Git identity and commit signing
+
+args:
+  git_user_name:
+    required: true
+    description: The name used for Git commits
+  git_user_email:
+    required: true
+    description: The email address used for Git commits
+  git_user_signingKey:
+    required: true
+    description: The public SSH key used for signing Git commits
+
+capabilities:
+  - type: com.docker.sandbox/ssh-agent@1
+    config:
+      phase: runtime
+      unrestricted: false
+      sign: [ git ]
+      authenticate: [ git@github.com ]
+  - type: com.docker.sandbox/lifecycle@1
+    config:
+      startup:
+        - command: [ 'sh', '-c', 'git config set --global init.defaultBranch main' ]
+        - command: [ 'sh', '-c', 'git config set --global commit.gpgsign true' ]
+        - command: [ 'sh', '-c', 'git config set --global gpg.format ssh' ]
+        - command: [ 'sh', '-c', 'git config set --global user.name "${{ kit.args.git_user_name }}"' ]
+        - command: [ 'sh', '-c', 'git config set --global user.email "${{ kit.args.git_user_email }}"' ]
+        - command: [ 'sh', '-c', 'git config set --global user.signingKey "${{ kit.args.git_user_signingKey }}"' ]
