@@ -26,4 +26,6 @@ Patterns this repo follows, plus rules inherited from the root [AGENTS.md](../AG
   workload's launch command. Passwd-level default shells apply only where the shell is looked up
   (SSH, `su`). The only mixin-side lever for changing what `sbx run shell` lands in is a guarded `exec`
   in `~/.bash_profile`.
-- Source comments in kits explain *why* only, at most a line or two.
+- Kit sources carry no rationale comments: the *why* lives in the kit's lode entry and the commit
+  body. Source comments are rare, at most a line or two, explain *why* only, and never narrate fix
+  history.

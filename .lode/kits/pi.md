@@ -30,8 +30,6 @@ RUN sed -i 's|^URIs: http://deb.debian.org|URIs: https://deb.debian.org|' \
  && chown agent:agent /home/agent/.tmux.conf
 COPY <<'EOF' /usr/local/bin/pi-launch
 #!/bin/sh
-# tmux only with a terminal attached (headless runs need stdout); -A
-# reattach ignores the argv tail by design: attach to the live agent.
 [ -t 0 ] && command -v tmux >/dev/null 2>&1 \
   && exec tmux new-session -A -s pi pi "$@"
 exec pi "$@"
