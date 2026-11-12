@@ -1,6 +1,6 @@
 # sbx-kits
 
-A personal collection of [Docker Sandbox](https://docs.docker.com/) kits: reusable mixins that customize sandboxes built
+A personal collection of [Docker Sandbox](https://docs.docker.com/) kits: reusable mixins and agent workloads that customize sandboxes built
 with the `sbx` CLI.
 
 ## Kits
@@ -14,6 +14,7 @@ also ship a Dockerfile for staged installation.
 | [`git-identity-sign/`](git-identity-sign/) | Configures Git identity with SSH commit signing                               | `ssh-agent@1`, `lifecycle@1`      |
 | [`mise-en-place/`](mise-en-place/)         | Installs and activates the `mise` tool manager                                | `network-policy@2`, `lifecycle@1` |
 | [`fish-starship/`](fish-starship/)         | Installs fish shell + starship prompt; fish as the `agent` user's login shell | `lifecycle@1`                     |
+| [`pi/`](pi/)                               | **Workload:** runs [Pi](https://pi.dev/) as the sandbox's agent                | `sbx@1`, `lifecycle@1`, sessions, credentials, egress |
 
 ## Kit anatomy
 

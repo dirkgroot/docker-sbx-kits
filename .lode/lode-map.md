@@ -12,11 +12,12 @@ Index of all lode files. Start here in every new session; read [summary.md](summ
 
 ## kits/ — one file per kit
 
-- [kits/summary.md](kits/summary.md) — kit catalog and how kits compose into a sandbox.
+- [kits/summary.md](kits/summary.md) — kit catalog (mixin vs workload kinds) and how kits compose into a sandbox.
 - [kits/agent-context.md](kits/agent-context.md) — injects the personal INTJ `AGENTS.md`.
 - [kits/git-identity-sign.md](kits/git-identity-sign.md) — Git identity + SSH commit signing.
 - [kits/mise-en-place.md](kits/mise-en-place.md) — installs and activates the `mise` tool manager.
 - [kits/fish-starship.md](kits/fish-starship.md) — installs fish + starship prompt, makes fish the login shell.
+- [kits/pi.md](kits/pi.md) — Pi (pi.dev) as the sandbox's agent: first workload kit.
 
 ## plans/
 

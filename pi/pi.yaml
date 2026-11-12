@@ -1,0 +1,163 @@
+# syntax=docker/sandbox-kit:3
+# yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json
+schemaVersion: "3"
+displayName: Pi
+description: Pi
+
+kind: workload
+
+args:
+  version:
+    default: "1.5.2"
+    pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
+    description: Pi release to install
+    buildArg: PI_VERSION
+
+provides: ["pi@${{ kit.args.version }}"]
+
+capabilities:
+  - type: com.docker.sandbox/sbx@1
+
+  - type: com.docker.sandbox/network-policy@1
+    config:
+      runtime:
+        allow:
+          - pi.dev:443
+          - "*.pi.dev:443"
+          - registry.npmjs.org:443
+          - github.com:443
+          - codeload.github.com:443
+          - raw.githubusercontent.com:443
+          - api.github.com:443
+          - "*.githubusercontent.com:443"
+          - deb.debian.org:80
+          - deb.debian.org:443
+          - dhi.io:80
+          - api.anthropic.com:443
+          - claude.ai:443
+          - console.anthropic.com:443
+          - api.openai.com:443
+          - openai.com:443
+          - auth.openai.com:443
+          - chatgpt.com:443
+          - aiplatform.googleapis.com:443
+          - generativelanguage.googleapis.com:443
+          - oauth2.googleapis.com:443
+          - vertexai.googleapis.com:443
+          - api.groq.com:443
+          - openrouter.ai:443
+          - api.x.ai:443
+
+  - type: com.docker.sandbox/credential@1
+    optional: true
+    description: GitHub access
+    config:
+      service: github
+      phase: runtime
+      apiKey:
+        # gh and git tooling read GITHUB_TOKEN natively, so the sentinel
+        # doubles as ambient auth at the allowed hosts.
+        name: GITHUB_TOKEN
+        proxyManaged: true
+        inject:
+          - {domain: github.com, header: Authorization, format: "Bearer %s"}
+          - {domain: raw.githubusercontent.com, header: Authorization, format: "Bearer %s"}
+          - {domain: api.github.com, header: Authorization, format: "Bearer %s"}
+
+  - type: com.docker.sandbox/lifecycle@1
+    config:
+      install:
+        - command: mkdir -p /home/agent/.pi/agent && chown agent:agent /home/agent/.pi /home/agent/.pi/agent
+          user: "0"
+          description: Ensure ~/.pi/agent is owned by agent
+
+        - command: |
+            set -e
+            mkdir -p /home/agent/.pi/agent
+            /usr/bin/node -e '
+              const fs = require("node:fs");
+              const path = "/home/agent/.pi/agent/settings.json";
+              const seed = { defaultProjectTrust: "always", enableInstallTelemetry: false };
+              let cur = {};
+              try { cur = JSON.parse(fs.readFileSync(path, "utf8")); } catch {}
+              fs.writeFileSync(path, JSON.stringify({ ...cur, ...seed }, null, 2) + "\n");
+            '
+          user: agent
+          description: Seed Pi settings.json (trust model, telemetry off)
+
+        - command: &register-mcp-gateway |
+            set -e
+            [ -n "$MCP_GATEWAY_URL" ] || exit 0
+            export PATH="/usr/local/share/npm-global/bin:$PATH"
+            pi mcp add mcp-gateway --url "$MCP_GATEWAY_URL" --bearer-token-env-var MCP_SENTINEL_TOKEN_NAME
+          user: agent
+          env: [MCP_GATEWAY_URL, MCP_SENTINEL_TOKEN_NAME]
+          description: Register the sandbox MCP gateway (install-time, race-free)
+      startup:
+        - command: *register-mcp-gateway
+          user: agent
+          env: [MCP_GATEWAY_URL, MCP_SENTINEL_TOKEN_NAME]
+          description: Register the sandbox MCP gateway (startup fallback)
+
+  - type: com.docker.sandbox/agent-sessions@1
+    description: Drive pi sessions programmatically
+    config:
+      prompt: ["-p", "--", "{{.Prompt}}"]
+      continue: ["--continue"]
+      resume: ["--session", "{{.SessionID}}"]
+      list: |
+        find /home/agent/.pi/agent/sessions -name '*.jsonl' -type f -printf '%T@\t%p\n' 2>/dev/null \
+          | sort -rg | cut -f2- \
+          | while IFS= read -r f; do head -n1 "$f" | jq -r 'select(.type=="session") | .id // empty' 2>/dev/null; done
+
+  - type: com.docker.sandbox/agent-interactive-sessions@1
+    optional: true
+    description: Open pi's terminal UI on a chosen session
+    config:
+      prompt: ["--", "{{.Prompt}}"]
+      continue: ["--continue"]
+      resume: ["--session", "{{.SessionID}}"]
+      sessionPicker: ["--resume"]
+
+  - type: com.docker.sandbox/agent-skills@1
+    optional: true
+    config:
+      path: /home/agent/.pi/agent/skills
+
+  - type: com.docker.sandbox/agent-context@1
+    optional: true
+    config: &agent-context
+      filename: AGENTS.md
+      directory: /home/agent/.pi/agent
+      content: |
+        # Pi
+
+        This sandbox runs Pi, the minimal extensible coding agent (pi.dev).
+        Provider API keys are proxy-managed sentinels exposed as plain
+        environment variables (ANTHROPIC_API_KEY, OPENAI_API_KEY, ...);
+        subscription routes that need `/login` are not available here.
+
+        ## Tmux launch
+
+        Interactive launches run inside a tmux session named `pi`;
+        `tmux attach -t pi` reattaches after a disconnect. Headless runs
+        (`pi -p ...`) bypass tmux.
+
+        ## Environment Persistence
+
+        `BASH_ENV` is set to `/etc/sandbox-persistent.sh`. Bash sources that
+        file before every non-interactive invocation, so `export` statements
+        appended to it persist across all subsequent tool calls without a
+        login shell.
+
+        ### Shell completions must NOT go in the persistent environment file
+
+        The file is sourced before every bash invocation, and completion
+        scripts depend on variables (`COMP_WORDS`, `COMPREPLY`) that only
+        exist during tab-completion. Sourcing one at command time silently
+        breaks every bash call. Keep the file to plain `export` statements;
+        install completions in `~/.bashrc` instead.
+
+  - type: com.docker.sandbox/agent-context@2
+    optional: true
+    config: *agent-context

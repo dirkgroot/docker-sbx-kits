@@ -14,6 +14,8 @@ Patterns this repo follows, plus rules inherited from the root [AGENTS.md](../AG
 - Startup commands that need the workspace path take it from `WORKSPACE_DIR` (`env: [WORKSPACE_DIR]`) and guard with `${WORKSPACE_DIR:?...}` to fail loudly when unset.
 - Runtime egress is default-deny: any tool that downloads needs a matching `network-policy` allow for its domains (see [kits/mise-en-place.md](kits/mise-en-place.md)).
 - Ship binaries with a two-stage Dockerfile: build in a normal image, then `COPY --from=build` into `FROM scratch` so the kit image carries only the artifact.
+- Workload Dockerfiles build on a template carrying the platform floor (`dhi.io/sbx-templates:*`): `USER agent`, `WORKDIR /home/agent/workspace`, and `ENTRYPOINT` set to the agent binary; the pin is enforced in the build (`<tool> --version | grep -qx "$VERSION"`). Shell-test a workload image with `docker run --entrypoint sh` — a bare `docker run <img> sh -c …` appends to the entrypoint and becomes an agent prompt.
+- Settings a kit seeds into an agent's main config file must merge (existing keys retained, kit keys win), never blind-rewrite: install hooks run on every (re)create.
 
 ## Lode upkeep
 
