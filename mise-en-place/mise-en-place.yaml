@@ -5,6 +5,8 @@ kind: mixin
 displayName: Mise tool manager
 version: "1.0.0"
 
+provides: ["mise"]
+
 capabilities:
   - type: com.docker.sandbox/network-policy@2
     config:

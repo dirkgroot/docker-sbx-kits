@@ -5,6 +5,7 @@ Mixin that ships the starship prompt binary and wires it into fish.
 - Source: `fish-shell-starship/fish-shell-starship.yaml` + `fish-shell-starship/fish-shell-starship.dockerfile`
 - Kind: mixin · DisplayName: `Starship prompt` · version 1.0.0
 - Capabilities: `lifecycle@1` (two `files` entries, no hooks)
+- Requires: `fish`
 
 ## What it does
 
@@ -26,8 +27,8 @@ Mixin that ships the starship prompt binary and wires it into fish.
 
 - **No `network-policy` capability**: the binary downloads during image build; runtime makes no
   network calls.
-- **Self-contained unit**: starship binary + its fish hook together; fish itself comes from
-  [fish-shell](fish-shell.md), the other fish config from
+- **Self-contained unit**: starship binary + its fish hook together; declares `requires: ["fish"]` —
+  fish itself comes from [fish-shell](fish-shell.md), the other fish config from
   [fish-shell-config](fish-shell-config.md).
 
 ## Invariants

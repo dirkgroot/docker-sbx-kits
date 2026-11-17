@@ -5,16 +5,16 @@ sandbox and small focused **mixins** layer capabilities on top. Agents are mixin
 their binary, preferably via mise — not dedicated workloads (the `pi` workload worked that way and
 was removed when this model landed).
 
-| Kit | Kind | DisplayName | Args (required) | Capabilities | Files |
-|---|---|---|---|---|---|
-| [extensible-shell](extensible-shell.md) | **workload** | Extensible shell | — | — | `extensible-shell.yaml`, `extensible-shell.dockerfile` |
-| [agent-context](agent-context.md) | mixin | Personal AGENTS.md | — | `agent-context@1` | `agent-context.yaml` |
-| [git-identity-sign](git-identity-sign.md) | mixin | Git identity + signing | `git_user_name`, `git_user_email`, `git_user_signingKey` | `ssh-agent@1`, `lifecycle@1` | `git-identity-sign.yaml` |
-| [mise-en-place](mise-en-place.md) | mixin | Mise tool manager | — | `network-policy@2`, `lifecycle@1` | `mise-en-place.yaml`, `mise-en-place.dockerfile` |
-| [fish-shell](fish-shell.md) | mixin | Fish shell | — | `lifecycle@1` | `fish-shell.yaml`, `fish-shell.dockerfile` |
-| [fish-shell-config](fish-shell-config.md) | mixin | Fish configuration | — | `lifecycle@1` | `fish-shell-config.yaml` |
-| [fish-shell-starship](fish-shell-starship.md) | mixin | Starship prompt | — | `lifecycle@1` | `fish-shell-starship.yaml`, `fish-shell-starship.dockerfile` |
-| [opencode](opencode.md) | mixin | OpenCode agent | — | `network-policy@2`, `lifecycle@1` | `opencode.yaml` |
+| Kit | Kind | DisplayName | Args (required) | Provides / Requires | Capabilities | Files |
+|---|---|---|---|---|---|---|
+| [extensible-shell](extensible-shell.md) | **workload** | Extensible shell | — | — | — | `extensible-shell.yaml`, `extensible-shell.dockerfile` |
+| [agent-context](agent-context.md) | mixin | Personal AGENTS.md | — | — | `agent-context@1` | `agent-context.yaml` |
+| [git-identity-sign](git-identity-sign.md) | mixin | Git identity + signing | `git_user_name`, `git_user_email`, `git_user_signingKey` | — | `ssh-agent@1`, `lifecycle@1` | `git-identity-sign.yaml` |
+| [mise-en-place](mise-en-place.md) | mixin | Mise tool manager | — | provides `mise` | `network-policy@2`, `lifecycle@1` | `mise-en-place.yaml`, `mise-en-place.dockerfile` |
+| [fish-shell](fish-shell.md) | mixin | Fish shell | — | provides `fish` | `lifecycle@1` | `fish-shell.yaml`, `fish-shell.dockerfile` |
+| [fish-shell-config](fish-shell-config.md) | mixin | Fish configuration | — | requires `fish` | `lifecycle@1` | `fish-shell-config.yaml` |
+| [fish-shell-starship](fish-shell-starship.md) | mixin | Starship prompt | — | requires `fish` | `lifecycle@1` | `fish-shell-starship.yaml`, `fish-shell-starship.dockerfile` |
+| [opencode](opencode.md) | mixin | OpenCode agent | — | requires `mise` | `network-policy@2`, `lifecycle@1` | `opencode.yaml` |
 
 ## How a sandbox composes
 
@@ -28,6 +28,9 @@ flowchart TD
     wl --> oc["opencode<br/>mise use -g opencode@2.2.7"]
     wl --> gi["git-identity-sign<br/>SSH commit signing"]
     wl --> ac["agent-context<br/>personal AGENTS.md"]
+    oc -->|requires mise| me
+    cfg -->|requires fish| fs
+    st -->|requires fish| fs
 ```
 
 The workload's entrypoint is the composition seam: it ships `bash -l`, and mixins may replace

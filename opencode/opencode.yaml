@@ -5,6 +5,8 @@ kind: mixin
 displayName: OpenCode agent
 version: "1.0.0"
 
+requires: ["mise"]
+
 capabilities:
   - type: com.docker.sandbox/network-policy@2
     config:

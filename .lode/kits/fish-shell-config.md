@@ -5,6 +5,7 @@ Mixin that writes fish's user configuration. No binaries, no dockerfile — pure
 - Source: `fish-shell-config/fish-shell-config.yaml`
 - Kind: mixin · DisplayName: `Fish configuration` · version 1.0.0
 - Capabilities: `lifecycle@1` (four `files` entries, no hooks)
+- Requires: `fish`
 
 ## Files written (UID 1000, all `overwrite: false`)
 
@@ -15,13 +16,15 @@ Mixin that writes fish's user configuration. No binaries, no dockerfile — pure
 | `/home/agent/.config/fish/conf.d/fish_frozen_key_bindings.fish` | erases universal `fish_key_bindings` |
 | `/home/agent/.config/fish/conf.d/abbreviations.fish` | docker / `kubens` abbreviations |
 
-Config only — needs the fish binary from [fish-shell](fish-shell.md) to be useful.
+Config only — declares `requires: ["fish"]`: without [fish-shell](fish-shell.md) in the set, resolution
+fails closed instead of installing files no shell reads.
 
 ## Design decisions
 
 - **`overwrite: false` everywhere**: agent edits to these files survive sandbox (re)creation.
-- **Split from fish-shell** so binaries and config evolve independently and a sandbox can take one
-  without the other (composability + separation of concerns; see [summary.md](summary.md)).
+- **Split from fish-shell** so binaries and config evolve independently: fish alone is a valid sandbox
+  (default config), while this kit without fish is dead weight — the `requires` declaration makes that
+  direction impossible at resolution rather than silently useless (see [summary.md](summary.md)).
 
 ## Invariants
 
