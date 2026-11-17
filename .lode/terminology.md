@@ -15,7 +15,7 @@ Short entries: **term — meaning**.
 - **SSH-agent capability** — Injects an SSH agent with scoped uses: `sign: [git]`, `authenticate: [...]`, `phase: runtime`, `unrestricted: false`.
 - **Agent-context capability** — Writes a text file (here `AGENTS.md`) into the agent's config directory; may be marked `optional: true`.
 - **sbx@1 capability** — The workload-only agent-sandbox declaration; no config. Tells the host to launch the agent instead of the image's entrypoint as PID 1. Unused by extensible-shell, which boots its plain entrypoint.
-- **Entrypoint override** — The composition seam: extensible-shell ships `/home/agent/entrypoint.sh` (`bash -l`) and a mixin replaces it via lifecycle `files` with `overwrite: true` to choose the boot shell (fish-shell → `fish -l`).
+- **Entrypoint override** — The composition seam: extensible-shell ships `/home/agent/entrypoint.sh` (`bash -l`, agent-owned, mode 0700) and a mixin rewrites it from an install hook (as `user: "1000"`) to choose the boot shell — the one way every kit takes the seam. Install hooks run in dependency order, so requirers write after providers and win; lifecycle `files` must not touch the path (duplicate `files` paths are a composition error). fish-shell gates its write behind the `override_entrypoint` arg (default `true`).
 - **Secret injection** — Docker Sandbox's mechanism for supplying credentials (e.g. a fine-grained GitHub/GitLab personal access token) at runtime; the chosen auth path for remote Git, replacing SSH `authenticate` scopes.
 - **sbx** — The host CLI that assembles sandboxes from kits and manages policy, ports, secrets, and approvals.
 - **AGENTS.md (repo root)** — The Lode Coding method; instructions for agents working in this repo, not project docs.
@@ -24,5 +24,5 @@ Short entries: **term — meaning**.
 - **/etc/sandbox-persistent.sh** — Sandbox-wide env file sourced by every bash context (BASH_ENV, profile, bashrc); kits append env exports to it (e.g. `mise activate`, the fish `SHELL` export).
 - **mise** — Polyglot dev-tool version manager (mise.jdx.dev) installed and activated by the `mise-en-place` kit; the preferred installer for agents and tools.
 - **opencode** — The OpenCode coding agent (opencode.ai), installed as a mixin via `mise use -g opencode@2.2.7`. See [kits/opencode.md](kits/opencode.md).
-- **fish** — Shell (fish 4.9.3) shipped as a standalone binary with embedded `share/fish` data by the `fish-shell` kit; login shell of the `agent` user and, via the entrypoint override, the boot shell. Config comes from `fish-shell-config`.
+- **fish** — Shell (fish 4.9.3) shipped as a standalone binary with embedded `share/fish` data by the `fish-shell` kit; login shell of the `agent` user and — when its `override_entrypoint` arg is true, the default — the boot shell via the entrypoint override. Config comes from `fish-shell-config`.
 - **starship** — Cross-shell prompt (starship 1.27.0) shipped as a static musl binary by the `fish-shell-starship` kit; configured via `~/.config/starship.toml`.

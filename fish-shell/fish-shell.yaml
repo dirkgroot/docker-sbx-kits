@@ -5,7 +5,13 @@ kind: mixin
 displayName: Fish shell
 version: "1.0.0"
 
-provides: ["fish"]
+args:
+  override_entrypoint:
+    default: "true"
+    description: Overwrite the workload's entrypoint.sh to boot straight into fish. Set to false to leave the entrypoint to another kit.
+    enum: [ "true", "false" ]
+
+provides: [ "fish" ]
 
 capabilities:
   - type: com.docker.sandbox/lifecycle@1
@@ -17,9 +23,9 @@ capabilities:
         - command: |
             grep -qs '^export SHELL=' /etc/sandbox-persistent.sh || printf 'export SHELL=/usr/local/bin/fish\n' >> /etc/sandbox-persistent.sh
           user: "1000"
-      files:
-        - path: /home/agent/entrypoint.sh
-          overwrite: true
-          content: |
-            #!/usr/bin/env bash
-            fish -l
+        - command: |
+            if [ "${{ kit.args.override_entrypoint }}" = "true" ]; then
+              printf '#!/usr/bin/env bash\nfish -l\n' > /home/agent/entrypoint.sh
+              chmod 0700 /home/agent/entrypoint.sh
+            fi
+          user: "1000"

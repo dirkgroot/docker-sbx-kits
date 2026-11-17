@@ -1,12 +1,13 @@
 # fish-shell
 
-Mixin that ships the fish binary and makes fish the `agent` user's login shell — including
-overriding the [extensible-shell](extensible-shell.md) workload's entrypoint so the sandbox boots
-straight into fish.
+Mixin that ships the fish binary and makes fish the `agent` user's login shell — and, unless told
+otherwise, overrides the [extensible-shell](extensible-shell.md) workload's entrypoint so the
+sandbox boots straight into fish.
 
 - Source: `fish-shell/fish-shell.yaml` + `fish-shell/fish-shell.dockerfile`
 - Kind: mixin · DisplayName: `Fish shell` · version 1.0.0
-- Capabilities: `lifecycle@1` (two install hooks + one `files` entry)
+- Args: `override_entrypoint` (default `"true"`, enum `true`/`false`) — gate on the entrypoint override
+- Capabilities: `lifecycle@1` (three install hooks)
 - Provides: `fish` (unversioned — the pin lives in the dockerfile `ARG`, not the manifest, mirroring [mise-en-place](mise-en-place.md)'s rationale)
 
 ## What it does
@@ -15,8 +16,12 @@ straight into fish.
    `usermod -s /usr/local/bin/fish agent`.
 2. **install (user 1000)**: exports `SHELL=/usr/local/bin/fish` in `/etc/sandbox-persistent.sh`
    (grep-guarded) — this is how the opencode harness picks fish for its terminal and shell tools.
-3. **files**: `/home/agent/entrypoint.sh` (`fish -l`, `overwrite: true`) — replaces the workload's
-   bash entrypoint, so a sandbox composed as extensible-shell + fish-shell boots into fish.
+3. **install (user 1000)**: when `override_entrypoint` is `true` (the default), rewrites
+   `/home/agent/entrypoint.sh` to `fish -l` (`printf` + `chmod 0700`) — so a sandbox composed as
+   extensible-shell + fish-shell boots into fish. Running as the agent user, truncating the
+   workload's file keeps it agent-owned; the `chmod` restores mode 0700 even if the file had to be
+   created. With `override_entrypoint=false` the hook leaves the file alone and the boot shell stays
+   with whatever kit writes it next — e.g. a tmux mixin that starts `tmux` (running fish inside).
 
 Binary only: fish *configuration* lives in [fish-shell-config](fish-shell-config.md), starship in
 [fish-shell-starship](fish-shell-starship.md).
@@ -41,6 +46,12 @@ ships only the binary (same pattern as [mise-en-place](mise-en-place.md)).
 - **Entrypoint override instead of bash handoff.** With a self-owned workload, replacing
   `entrypoint.sh` is the lever for choosing the boot shell; the old guarded `exec fish` in
   `~/.bash_profile` trick is retired.
+- **The override is arg-gated (`override_entrypoint`, default `true`) and hook-based.** Rewriting
+  the entrypoint from an install hook is the one way every kit takes the composition seam: hooks run
+  in dependency order, so a requirer (a tmux mixin, say) writes after fish-shell and its entrypoint
+  wins, with no `files`-path collision to fear — lifecycle `files` must not touch the path (duplicate
+  `files` paths are a composition error). A kit that wants fish-shell out of the way composes with
+  `override_entrypoint=false`.
 
 ## Invariants
 
@@ -48,8 +59,12 @@ ships only the binary (same pattern as [mise-en-place](mise-en-place.md)).
   fish-shell-starship declare `requires: ["fish"]`, so this kit must be in the set for them to resolve.
 - fish must ship as a single self-contained binary; if a future release stops embedding
   `share/fish`, the dockerfile must ship that directory too.
-- The `entrypoint.sh` files entry must keep `overwrite: true`, or the workload's bash entrypoint
-  wins.
+- The entrypoint overwrite stays an install hook running as `user: "1000"`, gated on
+  `override_entrypoint`: truncation keeps the workload's agent-owned file agent-owned, and
+  `chmod 0700` restores the mode even if the hook had to create the file.
+- Kits choose the boot shell by writing `/home/agent/entrypoint.sh` from install hooks only —
+  never lifecycle `files` (duplicate `files` paths are a composition error); dependency order
+  decides which write survives.
 - `files` paths are absolute — the runtime does not expand `$HOME`.
 
 Related: [fish-shell-config.md](fish-shell-config.md) · [fish-shell-starship.md](fish-shell-starship.md) · [extensible-shell.md](extensible-shell.md)

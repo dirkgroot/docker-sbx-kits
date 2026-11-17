@@ -27,9 +27,12 @@ flowchart TD
 
 - The Dockerfile writes `/home/agent/entrypoint.sh` (`bash -l`, mode 0700) and sets it as
   `ENTRYPOINT` — the sandbox's login surface.
-- The file lives under `/home/agent` so mixins can replace it: a mixin lifecycle `files` entry at
-  the same path with `overwrite: true` wins at sandbox creation. [fish-shell](fish-shell.md) does
-  exactly this to boot into fish.
+- The file lives under `/home/agent` so mixins can replace it: the one way to take the seam is an
+  install hook running as `user: "1000"` that rewrites the file (truncation keeps it agent-owned;
+  `chmod 0700` restores the mode) — hooks run in dependency order, so requirers write after
+  providers and win, and lifecycle `files` must not touch the path (duplicate `files` paths are a
+  composition error). [fish-shell](fish-shell.md) boots into fish this way, gated on its
+  `override_entrypoint` arg (default `true`).
 - Base image `dhi.io/sbx-templates:shell-docker` carries the platform floor (`USER agent`,
   `WORKDIR /home/agent/workspace`).
 

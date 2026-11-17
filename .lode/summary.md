@@ -12,7 +12,7 @@ personal `AGENTS.md`; `git-identity-sign` sets Git identity with SSH commit **si
 remote authentication is delegated to Docker Sandbox secret injection with fine-grained tokens, so
 the ssh-agent no longer authenticates; `mise-en-place` installs and activates the `mise` tool
 manager (egress `mise*.jdx.dev`); the old monolithic `fish-starship` kit is split for composability
-into `fish-shell` (fish binary + login shell + entrypoint override to `fish -l`),
+into `fish-shell` (fish binary + login shell + `override_entrypoint`-gated boot into `fish -l`),
 `fish-shell-config` (conf.d drop-ins), and `fish-shell-starship` (starship binary + fish init). The
 repo-root `AGENTS.md` is not project documentation — it is the **Lode Coding** method governing
 every agent working here, including keeping this `.lode/` accurate. The folder is a git repository
