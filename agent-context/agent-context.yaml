@@ -2,7 +2,8 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json
 schemaVersion: "3"
 kind: mixin
-displayName: My personal AGENTS.md
+displayName: Personal AGENTS.md
+version: "1.0.0"
 
 capabilities:
   - type: com.docker.sandbox/agent-context@1

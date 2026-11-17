@@ -4,7 +4,7 @@ Installs the [`mise`](https://mise.jdx.dev) tool version manager, activates it i
 the workspace's mise config at boot.
 
 - Source: `mise-en-place/mise-en-place.yaml` + `mise-en-place/mise-en-place.dockerfile`
-- DisplayName: `Mise en place mixin`
+- Kind: mixin · DisplayName: `Mise tool manager` · version 1.0.0
 - Capabilities: `com.docker.sandbox/network-policy@2`, `com.docker.sandbox/lifecycle@1`
 - Args: none
 
@@ -28,8 +28,10 @@ Two-stage build: the final kit image is `FROM scratch` and contains only the `mi
 
 ## Network
 
-- `network-policy@2` runtime allow: `mise.jdx.dev`. Sandbox egress is default-deny; the allow exists so
-  mise can download tool versions when installing tools declared by the workspace during the session.
+- `network-policy@2` runtime allow: `mise*.jdx.dev` (wildcard). Sandbox egress is default-deny; the
+  allow exists so mise can download tool versions when installing tools declared by the workspace
+  during the session. Downloads hit mise subdomains, so the earlier bare-host allow (`mise.jdx.dev`)
+  missed them.
 
 ## Invariants
 

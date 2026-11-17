@@ -1,0 +1,22 @@
+# syntax=docker/sandbox-kit:3
+# yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json
+schemaVersion: "3"
+kind: mixin
+displayName: Starship prompt
+version: "1.0.0"
+
+capabilities:
+  - type: com.docker.sandbox/lifecycle@1
+    config:
+      files:
+        - path: /home/agent/.config/fish/config.fish
+          overwrite: false
+          content: |
+            starship init fish | source
+        - path: /home/agent/.config/starship.toml
+          overwrite: false
+          content: |
+            # Get editor completions based on the config schema
+            "$schema" = 'https://starship.rs/config-schema.json'
+            
+            add_newline = false

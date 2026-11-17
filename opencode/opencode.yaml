@@ -1,0 +1,19 @@
+# syntax=docker/sandbox-kit:3
+# yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json
+schemaVersion: "3"
+kind: mixin
+displayName: OpenCode agent
+version: "1.0.0"
+
+capabilities:
+  - type: com.docker.sandbox/network-policy@2
+    config:
+      runtime:
+        allow: [ "opencode.ai", "*.opencode.ai" ]
+
+  - type: com.docker.sandbox/lifecycle@1
+    config:
+      install:
+        - command: mise use -g opencode@2.2.7
+          description: Install OpenCode using mise
+          user: "1000"

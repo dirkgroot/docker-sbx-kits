@@ -1,30 +1,38 @@
 # Kits — catalog
 
-Kits come in two kinds. All existing kits were `kind: mixin` (overlay layers); `pi` is the first
-`kind: workload` (root filesystem + the agent the host launches, declared with `com.docker.sandbox/sbx@1`).
-A sandbox is assembled from one or more kits; the `sbx` runtime applies each capability, substituting kit args into capability config.
+sbx-kits follows a **compose-don't-specialize** model: one generic **workload** is the base of every
+sandbox and small focused **mixins** layer capabilities on top. Agents are mixins too — they install
+their binary, preferably via mise — not dedicated workloads (the `pi` workload worked that way and
+was removed when this model landed).
 
 | Kit | Kind | DisplayName | Args (required) | Capabilities | Files |
 |---|---|---|---|---|---|
-| [agent-context](agent-context.md) | mixin | My personal AGENTS.md | — | `agent-context@1` | `agent-context.yaml` |
-| [git-identity-sign](git-identity-sign.md) | mixin | Git identity and commit signing | `git_user_name`, `git_user_email`, `git_user_signingKey` | `ssh-agent@1`, `lifecycle@1` | `git-identity-sign.yaml` |
-| [mise-en-place](mise-en-place.md) | mixin | Mise en place mixin | — | `network-policy@2`, `lifecycle@1` | `mise-en-place.yaml`, `mise-en-place.dockerfile` |
-| [fish-starship](fish-starship.md) | mixin | Fish shell and Starship prompt | — | `lifecycle@1` | `fish-starship.yaml`, `fish-starship.dockerfile` |
-| [pi](pi.md) | workload | Pi | — (`version` has a default) | `sbx@1`, `network-policy@1`, `credential@1` ×1 (github), `lifecycle@1`, `agent-sessions@1`, `agent-interactive-sessions@1`, `agent-skills@1`, `agent-context@1`+`@2` | `pi.yaml`, `pi.dockerfile` |
+| [extensible-shell](extensible-shell.md) | **workload** | Extensible shell | — | — | `extensible-shell.yaml`, `extensible-shell.dockerfile` |
+| [agent-context](agent-context.md) | mixin | Personal AGENTS.md | — | `agent-context@1` | `agent-context.yaml` |
+| [git-identity-sign](git-identity-sign.md) | mixin | Git identity + signing | `git_user_name`, `git_user_email`, `git_user_signingKey` | `ssh-agent@1`, `lifecycle@1` | `git-identity-sign.yaml` |
+| [mise-en-place](mise-en-place.md) | mixin | Mise tool manager | — | `network-policy@2`, `lifecycle@1` | `mise-en-place.yaml`, `mise-en-place.dockerfile` |
+| [fish-shell](fish-shell.md) | mixin | Fish shell | — | `lifecycle@1` | `fish-shell.yaml`, `fish-shell.dockerfile` |
+| [fish-shell-config](fish-shell-config.md) | mixin | Fish configuration | — | `lifecycle@1` | `fish-shell-config.yaml` |
+| [fish-shell-starship](fish-shell-starship.md) | mixin | Starship prompt | — | `lifecycle@1` | `fish-shell-starship.yaml`, `fish-shell-starship.dockerfile` |
+| [opencode](opencode.md) | mixin | OpenCode agent | — | `network-policy@2`, `lifecycle@1` | `opencode.yaml` |
 
-## How a kit becomes sandbox behavior
+## How a sandbox composes
 
 ```mermaid
-flowchart LR
-    user["sbx (host CLI)"] -->|"kit + args"| manifest["kit manifest<br/>schemaVersion 3, kind: mixin|workload"]
-    manifest --> caps["capabilities[]"]
-    caps --> ac["agent-context@1/2<br/>writes AGENTS.md"]
-    caps --> ssh["ssh-agent@1<br/>sign + authenticate"]
-    caps --> life["lifecycle@1<br/>install + startup hooks"]
-    caps --> net["network-policy@1/2<br/>egress allowlist"]
-    caps --> sbx["sbx@1<br/>workload: host launches the agent"]
-    caps --> sess["agent-sessions@1 +<br/>agent-interactive-sessions@1"]
+flowchart TD
+    wl["extensible-shell (workload)<br/>platform floor +<br/>/home/agent/entrypoint.sh → bash -l"]
+    wl --> fs["fish-shell<br/>fish binary + login shell<br/>entrypoint.sh → fish -l (overwrite)"]
+    wl --> cfg["fish-shell-config<br/>conf.d drop-ins"]
+    wl --> st["fish-shell-starship<br/>starship binary + fish init"]
+    wl --> me["mise-en-place<br/>mise activate + trust"]
+    wl --> oc["opencode<br/>mise use -g opencode@2.2.7"]
+    wl --> gi["git-identity-sign<br/>SSH commit signing"]
+    wl --> ac["agent-context<br/>personal AGENTS.md"]
 ```
+
+The workload's entrypoint is the composition seam: it ships `bash -l`, and mixins may replace
+`/home/agent/entrypoint.sh` (lifecycle `files`, `overwrite: true`) to choose the boot shell —
+[fish-shell](fish-shell.md) does exactly that.
 
 ## Invariants
 
@@ -34,4 +42,8 @@ flowchart LR
   Dockerfile. Workloads may additionally ship script files beside the manifest (the spec's own
   agent examples do); mixins should not.
 - Mixins overlay; workloads are the base. `sbx@1` is workload-only (the schema refuses it in a
-  mixin's capabilities).
+  mixin's capabilities). extensible-shell declares no capabilities at all.
+- One generic workload per sandbox; never create a new workload for a tool or agent — write a mixin.
+- Every manifest carries a semver `version` field.
+
+Related: [../summary.md](../summary.md) · [../terminology.md](../terminology.md) · [../practices.md](../practices.md)

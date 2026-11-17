@@ -2,7 +2,8 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json
 schemaVersion: "3"
 kind: mixin
-displayName: Git identity and commit signing
+displayName: Git identity + signing
+version: "1.0.0"
 
 args:
   git_user_name:
@@ -21,7 +22,6 @@ capabilities:
       phase: runtime
       unrestricted: false
       sign: [ git ]
-      authenticate: [ git@github.com ]
   - type: com.docker.sandbox/lifecycle@1
     config:
       startup:

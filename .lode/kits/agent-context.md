@@ -4,7 +4,7 @@ Injects the user's personal agent-tuning rules as an `AGENTS.md` file into the O
 of every sandbox that uses this kit.
 
 - Source: `agent-context/agent-context.yaml`
-- DisplayName: `My personal AGENTS.md`
+- Kind: mixin · DisplayName: `Personal AGENTS.md` · version 1.0.0
 - Capabilities: `com.docker.sandbox/agent-context@1`
 - Args: none
 

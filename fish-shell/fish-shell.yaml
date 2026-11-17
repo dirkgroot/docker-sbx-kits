@@ -1,0 +1,23 @@
+# syntax=docker/sandbox-kit:3
+# yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json
+schemaVersion: "3"
+kind: mixin
+displayName: Fish shell
+version: "1.0.0"
+
+capabilities:
+  - type: com.docker.sandbox/lifecycle@1
+    config:
+      install:
+        - command: |
+            grep -qx /usr/local/bin/fish /etc/shells 2>/dev/null || printf '%s\n' /bin/sh /bin/bash /usr/local/bin/fish >> /etc/shells
+            usermod -s /usr/local/bin/fish agent
+        - command: |
+            grep -qs '^export SHELL=' /etc/sandbox-persistent.sh || printf 'export SHELL=/usr/local/bin/fish\n' >> /etc/sandbox-persistent.sh
+          user: "1000"
+      files:
+        - path: /home/agent/entrypoint.sh
+          overwrite: true
+          content: |
+            #!/usr/bin/env bash
+            fish -l
