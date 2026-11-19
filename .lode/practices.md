@@ -6,6 +6,12 @@ Patterns this repo follows, plus rules inherited from the root [AGENTS.md](../AG
 
 - One kit per directory; directory name = kit name; manifest at `<name>/<name>.yaml`.
 - Every manifest opens with `# syntax=docker/sandbox-kit:3`, then a `# yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json` modeline (the `# syntax=` line must stay first), then `schemaVersion: "3"`, `kind`, `version`, `displayName` — short and self-speaking, no kit-level `description`: pickers show the name alone, the kit's lode doc carries the detail.
+- Top-level keys follow one canonical order reading as identity → interface → behavior:
+  `schemaVersion`, `kind`, `displayName`, `version` (what the kit is), then `args` (what the user
+  supplies), `provides` (what it offers other kits), `requires` (what it needs from them), then
+  `capabilities` (the implementation, which consumes args). Kits omit absent keys but never reorder;
+  `provides` precedes `requires`, mirroring the resolver (providers compose before requirers) and the
+  spec schema's own property order.
 - Pin capability majors explicitly (`@1`, `@2`) — the version is part of the contract.
 - Never bump a manifest's `version` when changing a kit. Version assignment belongs to the release
   workflow (planned, see [roadmap](plans/roadmap.md)): it will publish kits as OCI images and give a

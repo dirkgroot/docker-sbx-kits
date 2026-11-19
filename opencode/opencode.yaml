@@ -5,8 +5,6 @@ kind: mixin
 displayName: OpenCode agent
 version: "1.0.0"
 
-requires: ["mise-en-place"]
-
 args:
   auto_start:
     default: "false"
@@ -15,6 +13,8 @@ args:
   opencode_version:
     default: "2.3.2"
     description: OpenCode version to install (a mise version ref, e.g. 2.3.2 or latest).
+
+requires: ["mise-en-place"]
 
 capabilities:
   - type: com.docker.sandbox/network-policy@2
