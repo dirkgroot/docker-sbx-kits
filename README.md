@@ -53,8 +53,9 @@ requirements never pull kits in behind your back. Customization of the sandbox i
 
 ### Secure by default
 
-- Network egress is **default-deny**; a kit that downloads anything declares an explicit allow
-  (`mise-en-place` allows `mise*.jdx.dev`, `opencode` allows `opencode.ai`).
+- Network egress is **default-deny at runtime** (install-phase egress is open while install hooks run); a kit that
+  downloads anything during a session declares an explicit allow (`mise-en-place` allows `mise*.jdx.dev`, `opencode`
+  allows `opencode.ai`).
 - [`git-identity-sign/`](git-identity-sign/) scopes the ssh-agent to signing only (`sign: [git]`): commits are signed
   with your key, but remote authentication is not the agent's to perform — it comes from Docker Sandbox secret
   injection at runtime.

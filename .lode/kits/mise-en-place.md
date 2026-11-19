@@ -7,7 +7,7 @@ the workspace's mise config at boot.
 - Kind: mixin · DisplayName: `Mise tool manager` · version 1.0.0
 - Capabilities: `com.docker.sandbox/network-policy@2`, `com.docker.sandbox/lifecycle@1`
 - Args: none
-- Provides: `mise` (unversioned — the Dockerfile installs latest from mise.run, so there is no honest pin; an unversioned provide satisfies only an unconstrained require, SPEC-v3 §5.2)
+- Provides: `mise-en-place` (unversioned — the Dockerfile installs latest from mise.run, so there is no honest pin; an unversioned provide satisfies only an unconstrained require, SPEC-v3 §5.2)
 
 ## Image (dockerfile)
 
@@ -39,5 +39,5 @@ Two-stage build: the final kit image is `FROM scratch` and contains only the `mi
 - Binary path is `/usr/local/bin/mise`; activation appends to `/etc/sandbox-persistent.sh`, which must
   never contain shell completion scripts (see that file's rules).
 - Activation runs as user `1000`, not root.
-- Sole provider of the `mise` capability name (`com.docker.kit/mise`): mixins consuming mise declare
+- Sole provider of the `mise-en-place` capability name (`com.docker.kit/mise-en-place`): mixins consuming mise declare
   `requires: ["mise-en-place"]` and the resolver orders this kit's overlay first.
