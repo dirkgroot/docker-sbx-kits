@@ -1,4 +1,4 @@
-# sbx-kits
+# Docker Sandbox Kits
 
 A personal collection of [Docker Sandbox](https://docs.docker.com/) kits: one extensible base workload and reusable mixins that customize
 sandboxes built with the `sbx` CLI.
