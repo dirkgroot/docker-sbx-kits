@@ -8,9 +8,9 @@ version: "1.0.0"
 requires: ["mise"]
 
 args:
-  override_entrypoint:
+  auto_start:
     default: "false"
-    description: Overwrite the workload's entrypoint.sh to boot straight into opencode.
+    description: Automatically start opencode when the sandbox starts.
     enum: [ "true", "false" ]
   opencode_version:
     default: "2.3.2"
@@ -29,7 +29,7 @@ capabilities:
           description: Install OpenCode using mise
           user: "1000"
         - command: |
-            if [ "${{ kit.args.override_entrypoint }}" = "true" ]; then
+            if [ "${{ kit.args.auto_start }}" = "true" ]; then
               printf '#!/usr/bin/env bash\nexec opencode\n' > /home/agent/entrypoint.sh
               chmod 0700 /home/agent/entrypoint.sh
             fi

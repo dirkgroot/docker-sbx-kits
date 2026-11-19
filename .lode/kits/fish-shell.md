@@ -1,12 +1,12 @@
 # fish-shell
 
 Mixin that ships the fish binary and makes fish the `agent` user's login shell — and, when its
-`override_entrypoint` arg is set `true`, overrides the [extensible-shell](extensible-shell.md)
-workload's entrypoint so the sandbox boots straight into fish.
+`auto_start` arg is set `true`, overrides the [extensible-shell](extensible-shell.md)
+workload's entrypoint so the sandbox automatically starts fish.
 
 - Source: `fish-shell/fish-shell.yaml` + `fish-shell/fish-shell.dockerfile`
 - Kind: mixin · DisplayName: `Fish shell` · version 1.0.0
-- Args: `override_entrypoint` (default `"false"`, enum `true`/`false`) — opt-in gate on the entrypoint override
+- Args: `auto_start` (default `"false"`, enum `true`/`false`) — opt-in gate on the entrypoint override
 - Capabilities: `lifecycle@1` (three install hooks)
 - Provides: `fish` (unversioned — the pin lives in the dockerfile `ARG`, not the manifest, mirroring [mise-en-place](mise-en-place.md)'s rationale)
 
@@ -16,9 +16,9 @@ workload's entrypoint so the sandbox boots straight into fish.
    `usermod -s /usr/local/bin/fish agent`.
 2. **install (user 1000)**: exports `SHELL=/usr/local/bin/fish` in `/etc/sandbox-persistent.sh`
    (grep-guarded) — this is how the opencode harness picks fish for its terminal and shell tools.
-3. **install (user 1000)**: when `override_entrypoint` is `true`, rewrites
+3. **install (user 1000)**: when `auto_start` is `true`, rewrites
    `/home/agent/entrypoint.sh` to `fish -l` (`printf` + `chmod 0700`) — so a sandbox composed as
-   extensible-shell + fish-shell boots into fish. Running as the agent user, truncating the
+   extensible-shell + fish-shell automatically starts fish. Running as the agent user, truncating the
    workload's file keeps it agent-owned; the `chmod` restores mode 0700 even if the file had to be
    created. The default `false` leaves the file alone and the boot shell stays with whatever kit
    writes it next — e.g. a tmux mixin that starts `tmux` (running fish inside).
@@ -46,8 +46,8 @@ ships only the binary (same pattern as [mise-en-place](mise-en-place.md)).
 - **Entrypoint override instead of bash handoff.** With a self-owned workload, replacing
   `entrypoint.sh` is the lever for choosing the boot shell; the old guarded `exec fish` in
   `~/.bash_profile` trick is retired.
-- **The override is arg-gated (`override_entrypoint`, default `false`) and hook-based — opt-in.**
-  When several kits in a composition each carry an `override_entrypoint` arg, only the one that
+- **The override is arg-gated (`auto_start`, default `false`) and hook-based — opt-in.**
+  When several kits in a composition each carry an `auto_start` arg, only the one that
   should boot needs it set `true`; the rest keep the default and stay out of the way. Rewriting
   the entrypoint from an install hook is the one way every kit takes the composition seam: hooks run
   in dependency order, so a requirer (a tmux mixin, say) writes after fish-shell and its entrypoint
@@ -61,7 +61,7 @@ ships only the binary (same pattern as [mise-en-place](mise-en-place.md)).
 - fish must ship as a single self-contained binary; if a future release stops embedding
   `share/fish`, the dockerfile must ship that directory too.
 - The entrypoint overwrite stays an install hook running as `user: "1000"`, gated on
-  `override_entrypoint`: truncation keeps the workload's agent-owned file agent-owned, and
+  `auto_start`: truncation keeps the workload's agent-owned file agent-owned, and
   `chmod 0700` restores the mode even if the hook had to create the file.
 - Kits choose the boot shell by writing `/home/agent/entrypoint.sh` from install hooks only —
   never lifecycle `files` (duplicate `files` paths are a composition error); dependency order

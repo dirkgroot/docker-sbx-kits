@@ -15,7 +15,7 @@ Short entries: **term — meaning**.
 - **SSH-agent capability** — Injects an SSH agent with scoped uses: `sign: [git]`, `authenticate: [...]`, `phase: runtime`, `unrestricted: false`.
 - **Agent-context capability** — Writes a text file (here `AGENTS.md`) into the agent's config directory; may be marked `optional: true`.
 - **sbx@1 capability** — The workload-only agent-sandbox declaration; no config. Tells the host to launch the agent instead of the image's entrypoint as PID 1. Unused by extensible-shell, which boots its plain entrypoint.
-- **Entrypoint override** — The composition seam: extensible-shell ships `/home/agent/entrypoint.sh` (`bash -l`, agent-owned, mode 0700) and a mixin rewrites it from an install hook (as `user: "1000"`) to choose the boot shell — the one way every kit takes the seam. Install hooks run in dependency order, so requirers write after providers and win; lifecycle `files` must not touch the path (duplicate `files` paths are a composition error). The write is gated behind an `override_entrypoint` arg, **opt-in by convention** (default `false`): a
+- **Entrypoint override** — The composition seam: extensible-shell ships `/home/agent/entrypoint.sh` (`bash -l`, agent-owned, mode 0700) and a mixin rewrites it from an install hook (as `user: "1000"`) to choose the boot shell — the one way every kit takes the seam. Install hooks run in dependency order, so requirers write after providers and win; lifecycle `files` must not touch the path (duplicate `files` paths are a composition error). The write is gated behind an `auto_start` arg, **opt-in by convention** (default `false`): a
 composition sets it on exactly the one kit that should boot. fish-shell writes `fish -l`; opencode
 writes `exec opencode`.
 - **Secret injection** — Docker Sandbox's mechanism for supplying credentials (e.g. a fine-grained GitHub/GitLab personal access token) at runtime; the chosen auth path for remote Git, replacing SSH `authenticate` scopes.
@@ -27,6 +27,6 @@ writes `exec opencode`.
 - **mise** — Polyglot dev-tool version manager (mise.jdx.dev) installed and activated by the `mise-en-place` kit; the preferred installer for agents and tools.
 - **opencode** — The OpenCode coding agent (opencode.ai), installed as a mixin via `mise use -g` at
   the version given by its `opencode_version` arg (default `2.3.2`); can boot the sandbox via its
-  opt-in `override_entrypoint` arg. See [kits/opencode.md](kits/opencode.md).
-- **fish** — Shell (fish 4.9.3) shipped as a standalone binary with embedded `share/fish` data by the `fish-shell` kit; login shell of the `agent` user and — when its `override_entrypoint` arg is set `true` — the boot shell via the entrypoint override. Config comes from `fish-shell-config`.
+  opt-in `auto_start` arg. See [kits/opencode.md](kits/opencode.md).
+- **fish** — Shell (fish 4.9.3) shipped as a standalone binary with embedded `share/fish` data by the `fish-shell` kit; login shell of the `agent` user and — when its `auto_start` arg is set `true` — the boot shell via the entrypoint override. Config comes from `fish-shell-config`.
 - **starship** — Cross-shell prompt (starship 1.27.0) shipped as a static musl binary by the `fish-shell-starship` kit; configured via `~/.config/starship.toml`.

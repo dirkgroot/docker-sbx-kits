@@ -32,7 +32,7 @@ flowchart TD
   `chmod 0700` restores the mode) — hooks run in dependency order, so requirers write after
   providers and win, and lifecycle `files` must not touch the path (duplicate `files` paths are a
   composition error). [fish-shell](fish-shell.md) (`fish -l`) and [opencode](opencode.md)
-  (`exec opencode`) take the seam this way, each gated opt-in on its `override_entrypoint` arg
+  (`exec opencode`) take the seam this way, each gated opt-in on its `auto_start` arg
   (default `false`): a composition sets it `true` on exactly the one kit that should boot.
 - Base image `dhi.io/sbx-templates:shell-docker` carries the platform floor (`USER agent`,
   `WORKDIR /home/agent/workspace`).

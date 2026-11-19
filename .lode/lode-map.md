@@ -17,7 +17,7 @@ Index of all lode files. Start here in every new session; read [summary.md](summ
 - [kits/agent-context.md](kits/agent-context.md) — injects the personal INTJ `AGENTS.md`.
 - [kits/git-identity-sign.md](kits/git-identity-sign.md) — Git identity + SSH commit signing (sign-only; auth via secret injection).
 - [kits/mise-en-place.md](kits/mise-en-place.md) — installs and activates the `mise` tool manager.
-- [kits/fish-shell.md](kits/fish-shell.md) — fish binary, login shell, and the entrypoint override to boot into fish.
+- [kits/fish-shell.md](kits/fish-shell.md) — fish binary, login shell, and the `auto_start`-gated fish autostart.
 - [kits/fish-shell-config.md](kits/fish-shell-config.md) — fish conf.d configuration drop-ins.
 - [kits/fish-shell-starship.md](kits/fish-shell-starship.md) — starship binary + fish init/toml.
 - [kits/opencode.md](kits/opencode.md) — OpenCode coding agent installed via mise (agents-as-mixins).

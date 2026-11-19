@@ -6,9 +6,9 @@ displayName: Fish shell
 version: "1.0.0"
 
 args:
-  override_entrypoint:
+  auto_start:
     default: "false"
-    description: Overwrite the workload's entrypoint.sh to boot straight into fish.
+    description: Automatically start fish when the sandbox starts.
     enum: [ "true", "false" ]
 
 provides: [ "fish" ]
@@ -24,7 +24,7 @@ capabilities:
             grep -qs '^export SHELL=' /etc/sandbox-persistent.sh || printf 'export SHELL=/usr/local/bin/fish\n' >> /etc/sandbox-persistent.sh
           user: "1000"
         - command: |
-            if [ "${{ kit.args.override_entrypoint }}" = "true" ]; then
+            if [ "${{ kit.args.auto_start }}" = "true" ]; then
               printf '#!/usr/bin/env bash\nfish -l\n' > /home/agent/entrypoint.sh
               chmod 0700 /home/agent/entrypoint.sh
             fi
