@@ -27,7 +27,7 @@ Mixin that ships the starship prompt binary and wires it into fish.
 
 - **No `network-policy` capability**: the binary downloads during image build; runtime makes no
   network calls.
-- **Self-contained unit**: starship binary + its fish hook together; declares `requires: ["fish"]` —
+- **Self-contained unit**: starship binary + its fish hook together; declares `requires: ["fish-shell"]` —
   fish itself comes from [fish-shell](fish-shell.md), the other fish config from
   [fish-shell-config](fish-shell-config.md).
 

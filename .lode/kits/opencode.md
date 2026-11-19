@@ -27,7 +27,7 @@ other tool.
   [extensible-shell](extensible-shell.md) workload plus tool mixins compose a sandbox, instead of
   one workload kit per agent.
 - **Depends on mise-en-place.** `mise use -g` needs the mise binary and its activation in the
-  persistent env — declared as `requires: ["mise"]`, matching mise-en-place's `provides: ["mise"]`:
+  persistent env — declared as `requires: ["mise-en-place"]`, matching mise-en-place's `provides: ["mise-en-place"]`:
   composition fails closed without it, and the resolver orders the provider's overlay first.
 - **Version pinned via the `opencode_version` arg** (default `2.3.2`): consumers pin or upgrade
   opencode per sandbox without editing the kit; bump the default to upgrade every composition.

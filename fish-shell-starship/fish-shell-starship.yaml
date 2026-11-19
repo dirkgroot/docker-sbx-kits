@@ -5,7 +5,7 @@ kind: mixin
 displayName: Starship prompt
 version: "1.0.0"
 
-requires: ["fish"]
+requires: ["fish-shell"]
 
 capabilities:
   - type: com.docker.sandbox/lifecycle@1

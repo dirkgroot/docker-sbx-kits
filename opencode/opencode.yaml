@@ -5,7 +5,7 @@ kind: mixin
 displayName: OpenCode agent
 version: "1.0.0"
 
-requires: ["mise"]
+requires: ["mise-en-place"]
 
 args:
   auto_start:

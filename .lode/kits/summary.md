@@ -10,11 +10,11 @@ was removed when this model landed).
 | [extensible-shell](extensible-shell.md) | **workload** | Extensible shell | — | — | — | `extensible-shell.yaml`, `extensible-shell.dockerfile` |
 | [agent-context](agent-context.md) | mixin | Personal AGENTS.md | — | — | `agent-context@1` | `agent-context.yaml` |
 | [git-identity-sign](git-identity-sign.md) | mixin | Git identity + signing | `git_user_name`, `git_user_email`, `git_user_signingKey` (required) | — | `ssh-agent@1`, `lifecycle@1` | `git-identity-sign.yaml` |
-| [mise-en-place](mise-en-place.md) | mixin | Mise tool manager | — | provides `mise` | `network-policy@2`, `lifecycle@1` | `mise-en-place.yaml`, `mise-en-place.dockerfile` |
-| [fish-shell](fish-shell.md) | mixin | Fish shell | `auto_start` (default `false`) | provides `fish` | `lifecycle@1` | `fish-shell.yaml`, `fish-shell.dockerfile` |
-| [fish-shell-config](fish-shell-config.md) | mixin | Fish configuration | — | requires `fish` | `lifecycle@1` | `fish-shell-config.yaml` |
-| [fish-shell-starship](fish-shell-starship.md) | mixin | Starship prompt | — | requires `fish` | `lifecycle@1` | `fish-shell-starship.yaml`, `fish-shell-starship.dockerfile` |
-| [opencode](opencode.md) | mixin | OpenCode agent | `auto_start` (default `false`), `opencode_version` (default `2.3.2`) | requires `mise` | `network-policy@2`, `lifecycle@1` | `opencode.yaml` |
+| [mise-en-place](mise-en-place.md) | mixin | Mise tool manager | — | provides `mise-en-place` | `network-policy@2`, `lifecycle@1` | `mise-en-place.yaml`, `mise-en-place.dockerfile` |
+| [fish-shell](fish-shell.md) | mixin | Fish shell | `auto_start` (default `false`) | provides `fish-shell` | `lifecycle@1` | `fish-shell.yaml`, `fish-shell.dockerfile` |
+| [fish-shell-config](fish-shell-config.md) | mixin | Fish configuration | — | requires `fish-shell` | `lifecycle@1` | `fish-shell-config.yaml` |
+| [fish-shell-starship](fish-shell-starship.md) | mixin | Starship prompt | — | requires `fish-shell` | `lifecycle@1` | `fish-shell-starship.yaml`, `fish-shell-starship.dockerfile` |
+| [opencode](opencode.md) | mixin | OpenCode agent | `auto_start` (default `false`), `opencode_version` (default `2.3.2`) | requires `mise-en-place` | `network-policy@2`, `lifecycle@1` | `opencode.yaml` |
 
 ## How a sandbox composes
 
@@ -28,9 +28,9 @@ flowchart TD
     wl --> oc["opencode<br/>OpenCode agent via mise"]
     wl --> gi["git-identity-sign<br/>SSH commit signing"]
     wl --> ac["agent-context<br/>personal AGENTS.md"]
-    oc -->|requires mise| me
-    cfg -->|requires fish| fs
-    st -->|requires fish| fs
+    oc -->|requires mise-en-place| me
+    cfg -->|requires fish-shell| fs
+    st -->|requires fish-shell| fs
 ```
 
 The workload's entrypoint is the composition seam: it ships `bash -l`, and mixins rewrite

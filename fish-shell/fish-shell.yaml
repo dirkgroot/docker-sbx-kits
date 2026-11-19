@@ -11,7 +11,7 @@ args:
     description: Automatically start fish when the sandbox starts.
     enum: [ "true", "false" ]
 
-provides: [ "fish" ]
+provides: [ "fish-shell" ]
 
 capabilities:
   - type: com.docker.sandbox/lifecycle@1

@@ -8,7 +8,7 @@ Index of all lode files. Start here in every new session; read [summary.md](summ
 - [summary.md](summary.md) — one-paragraph living snapshot of the project.
 - [terminology.md](terminology.md) — domain language: kits, kinds, capabilities, args, sbx, entrypoint override.
 - [practices.md](practices.md) — kit-authoring patterns and lode upkeep rules.
-- [README.md](../README.md) — public-facing project overview for humans.
+- [README.md](../README.md) — public-facing project overview for humans: the "ingredients" idea, the design (workload vs mixins, entrypoint seam, provides/requires, security posture), and the kit catalog.
 
 ## kits/ — one file per kit
 

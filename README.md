@@ -3,6 +3,62 @@
 A personal collection of [Docker Sandbox](https://docs.docker.com/) kits: one extensible base workload and reusable mixins that customize
 sandboxes built with the `sbx` CLI.
 
+## Design
+
+These kits are **ingredients for building your own sandbox**, not finished recipes: a minimal extensible base, a set of
+small, highly reusable parts, and the freedom to compose — or fork and remix — the environment you want. Four choices
+give the collection its shape.
+
+### One workload, many mixins
+
+A sandbox boots from exactly one **workload**: the base image the host starts. This repo has exactly one,
+[`extensible-shell/`](extensible-shell/) — a bare shell sandbox on `dhi.io/sbx-templates:shell-docker` whose only
+opinion is an overridable `/home/agent/entrypoint.sh`. Everything else is a **mixin**: a small, focused layer that
+customizes the sandbox without owning it. Tools and agents are mixins too — [`opencode/`](opencode/) installs its
+agent through [`mise`](https://mise.jdx.dev/) rather than defining a second workload. Missing a tool? Write a mixin;
+never fork the workload.
+
+```mermaid
+flowchart TD
+    wl["extensible-shell (workload)<br/>bare shell + overridable entrypoint"]
+    wl --> fs["fish-shell"]
+    wl --> cfg["fish-shell-config"]
+    wl --> st["fish-shell-starship"]
+    wl --> me["mise-en-place"]
+    wl --> oc["opencode"]
+    wl --> gi["git-identity-sign"]
+    wl --> ac["agent-context"]
+    oc -->|requires mise-en-place| me
+    cfg -->|requires fish-shell| fs
+    st -->|requires fish-shell| fs
+```
+
+### The entrypoint is the seam
+
+`extensible-shell` boots `bash -l` from `/home/agent/entrypoint.sh`; a mixin can rewrite that file from an install
+hook to choose what boots instead — [`fish-shell/`](fish-shell/) writes `fish -l`, [`opencode/`](opencode/) writes
+`exec opencode`. Overrides are opt-in by convention: the rewrite is gated behind an `auto_start` arg (default
+`false`), and a composition turns it on for exactly the one kit that should take over the boot shell. Install hooks
+run in dependency order, so a mixin composed after the boot kit can wrap the entrypoint again — the last writer wins.
+
+### Declared dependencies, versioned capabilities
+
+Kits compose without reaching into each other. Dependencies are explicit in both directions: a mixin declares
+**requires** ([`fish-shell-config/`](fish-shell-config/) requires `fish-shell`, [`opencode/`](opencode/) requires
+`mise-en-place`),
+providers declare **provides**, and a composition fails closed when nothing in the set satisfies a requirement —
+requirements never pull kits in behind your back. Customization of the sandbox itself is requested through
+**capabilities**, versioned units such as `lifecycle@1` (install/startup hooks, config files), `network-policy@2`
+(egress allowlist), `ssh-agent@1`, and `agent-context@1`.
+
+### Secure by default
+
+- Network egress is **default-deny**; a kit that downloads anything declares an explicit allow
+  (`mise-en-place` allows `mise*.jdx.dev`, `opencode` allows `opencode.ai`).
+- [`git-identity-sign/`](git-identity-sign/) scopes the ssh-agent to signing only (`sign: [git]`): commits are signed
+  with your key, but remote authentication is not the agent's to perform — it comes from Docker Sandbox secret
+  injection at runtime.
+
 ## Kits
 
 Each kit is a self-contained directory with a YAML manifest declaring capabilities and the args they consume. Some kits
@@ -31,17 +87,6 @@ also ship a Dockerfile for staged installation.
   `network-policy@2`.
 - **Args** (e.g. `git_user_name`, `git_user_email`, `git_user_signingKey`) are declared under `args:` and referenced as
   `${{ kit.args.NAME }}`.
-
-## Auto-start
-
-The `extensible-shell` workload starts a bash terminal by default: its `bash -l` entrypoint is the sandbox's login
-surface. Mixins that ship a bootable program — [`fish-shell/`](fish-shell/) and [`opencode/`](opencode/) — declare an
-`auto_start` arg (default `false`) that overrides this behaviour: when set to `true`, the mixin rewrites the entrypoint
-at install time so its own program starts instead of bash.
-
-- Leave `auto_start` unset (or `false`) to boot into the default bash terminal.
-- Set `auto_start: true` on exactly one mixin per composition — the one that should take over the boot shell
-  (`fish -l` for `fish-shell`, `opencode` for `opencode`).
 
 ## Documentation
 

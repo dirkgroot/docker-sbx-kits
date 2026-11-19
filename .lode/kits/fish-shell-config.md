@@ -16,7 +16,7 @@ Mixin that writes fish's user configuration. No binaries, no dockerfile — pure
 | `/home/agent/.config/fish/conf.d/fish_frozen_key_bindings.fish` | erases universal `fish_key_bindings` |
 | `/home/agent/.config/fish/conf.d/abbreviations.fish` | docker / `kubens` abbreviations |
 
-Config only — declares `requires: ["fish"]`: without [fish-shell](fish-shell.md) in the set, resolution
+Config only — declares `requires: ["fish-shell"]`: without [fish-shell](fish-shell.md) in the set, resolution
 fails closed instead of installing files no shell reads.
 
 ## Design decisions

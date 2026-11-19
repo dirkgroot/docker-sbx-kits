@@ -40,4 +40,4 @@ Two-stage build: the final kit image is `FROM scratch` and contains only the `mi
   never contain shell completion scripts (see that file's rules).
 - Activation runs as user `1000`, not root.
 - Sole provider of the `mise` capability name (`com.docker.kit/mise`): mixins consuming mise declare
-  `requires: ["mise"]` and the resolver orders this kit's overlay first.
+  `requires: ["mise-en-place"]` and the resolver orders this kit's overlay first.

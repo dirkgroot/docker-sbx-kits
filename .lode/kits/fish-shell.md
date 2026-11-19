@@ -57,7 +57,7 @@ ships only the binary (same pattern as [mise-en-place](mise-en-place.md)).
 ## Invariants
 
 - Sole provider of the `fish` capability name (`com.docker.kit/fish`): fish-shell-config and
-  fish-shell-starship declare `requires: ["fish"]`, so this kit must be in the set for them to resolve.
+  fish-shell-starship declare `requires: ["fish-shell"]`, so this kit must be in the set for them to resolve.
 - fish must ship as a single self-contained binary; if a future release stops embedding
   `share/fish`, the dockerfile must ship that directory too.
 - The entrypoint overwrite stays an install hook running as `user: "1000"`, gated on
