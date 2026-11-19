@@ -11,10 +11,10 @@ was removed when this model landed).
 | [agent-context](agent-context.md) | mixin | Personal AGENTS.md | — | — | `agent-context@1` | `agent-context.yaml` |
 | [git-identity-sign](git-identity-sign.md) | mixin | Git identity + signing | `git_user_name`, `git_user_email`, `git_user_signingKey` (required) | — | `ssh-agent@1`, `lifecycle@1` | `git-identity-sign.yaml` |
 | [mise-en-place](mise-en-place.md) | mixin | Mise tool manager | — | provides `mise` | `network-policy@2`, `lifecycle@1` | `mise-en-place.yaml`, `mise-en-place.dockerfile` |
-| [fish-shell](fish-shell.md) | mixin | Fish shell | `override_entrypoint` (default `true`) | provides `fish` | `lifecycle@1` | `fish-shell.yaml`, `fish-shell.dockerfile` |
+| [fish-shell](fish-shell.md) | mixin | Fish shell | `override_entrypoint` (default `false`) | provides `fish` | `lifecycle@1` | `fish-shell.yaml`, `fish-shell.dockerfile` |
 | [fish-shell-config](fish-shell-config.md) | mixin | Fish configuration | — | requires `fish` | `lifecycle@1` | `fish-shell-config.yaml` |
 | [fish-shell-starship](fish-shell-starship.md) | mixin | Starship prompt | — | requires `fish` | `lifecycle@1` | `fish-shell-starship.yaml`, `fish-shell-starship.dockerfile` |
-| [opencode](opencode.md) | mixin | OpenCode agent | — | requires `mise` | `network-policy@2`, `lifecycle@1` | `opencode.yaml` |
+| [opencode](opencode.md) | mixin | OpenCode agent | `override_entrypoint` (default `false`), `opencode_version` (default `2.3.2`) | requires `mise` | `network-policy@2`, `lifecycle@1` | `opencode.yaml` |
 
 ## How a sandbox composes
 
@@ -25,7 +25,7 @@ flowchart TD
     wl --> cfg["fish-shell-config<br/>conf.d drop-ins"]
     wl --> st["fish-shell-starship<br/>starship binary + fish init"]
     wl --> me["mise-en-place<br/>mise activate + trust"]
-    wl --> oc["opencode<br/>mise use -g opencode@2.2.7"]
+    wl --> oc["opencode<br/>OpenCode agent via mise"]
     wl --> gi["git-identity-sign<br/>SSH commit signing"]
     wl --> ac["agent-context<br/>personal AGENTS.md"]
     oc -->|requires mise| me
@@ -35,9 +35,11 @@ flowchart TD
 
 The workload's entrypoint is the composition seam: it ships `bash -l`, and mixins rewrite
 `/home/agent/entrypoint.sh` from an install hook (agent user) to choose the boot shell —
-[fish-shell](fish-shell.md) does exactly that, gated on its `override_entrypoint` arg (default
-`true`). Hooks run in dependency order, so a requirer composed after fish-shell (a tmux mixin, say)
-writes last and wins.
+[fish-shell](fish-shell.md) (`fish -l`) and [opencode](opencode.md) (`exec opencode`) do exactly
+that. Overrides are **opt-in by convention**: each kit gates its write behind an
+`override_entrypoint` arg defaulting `false`, so a composition turns it on for exactly the one kit
+that should boot. Hooks run in dependency order, so a requirer composed after the boot kit (a tmux
+mixin, say) writes last and wins.
 
 ## Invariants
 

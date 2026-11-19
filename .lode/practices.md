@@ -12,7 +12,8 @@ Patterns this repo follows, plus rules inherited from the root [AGENTS.md](../AG
   new version only to kits that changed since the previous release. Until it exists, leave `version`
   untouched.
 - Declare every consumed value as a kit arg with `required: true` and an accurate `description`; interpolate with `${{ kit.args.NAME }}`.
-- Prefer lifecycle hooks over bespoke setup scripts: Dockerfile for image-time setup, `install` hooks once at sandbox creation (root by default; `user: "1000"` for agent-user work), `startup` hooks per boot. The one sanctioned entrypoint exception is the composition seam: overriding the [extensible-shell](kits/extensible-shell.md) workload's `/home/agent/entrypoint.sh` — the one way to do it is an install hook running as `user: "1000"` that rewrites the file (truncation keeps it agent-owned; `chmod 0700` restores the mode). Hooks run in dependency order, so requirers write after providers and win; lifecycle `files` must never touch that path (duplicate `files` paths are a composition error). A kit whose boot-shell claim should be relinquishable gates the write behind an arg — fish-shell's `override_entrypoint` (default `true`).
+- Prefer lifecycle hooks over bespoke setup scripts: Dockerfile for image-time setup, `install` hooks once at sandbox creation (root by default; `user: "1000"` for agent-user work), `startup` hooks per boot. The one sanctioned entrypoint exception is the composition seam: overriding the [extensible-shell](kits/extensible-shell.md) workload's `/home/agent/entrypoint.sh` — the one way to do it is an install hook running as `user: "1000"` that rewrites the file (truncation keeps it agent-owned; `chmod 0700` restores the mode). Hooks run in dependency order, so requirers write after providers and win; lifecycle `files` must never touch that path (duplicate `files` paths are a composition error). A kit gates its write behind an `override_entrypoint` arg, **opt-in by convention** (default
+`false`): a composition sets it on exactly the one kit that should boot.
 - Never use `sudo` inside lifecycle hooks — hooks run under a filtered `env -i` environment with no TTY, so PAM auth fails. Use a root hook (omit `user`) for system changes, and prefer non-PAM tools there: `usermod -s` for login shells, not `chsh` (`/etc/pam.d/chsh` makes `pam_shells` a required check against `/etc/shells`, which this image doesn't ship; the failed `required` module defeats `pam_rootok`'s root bypass and even root hits a password prompt).
 - Ship per-user config under `/home/agent` as lifecycle `files` entries (written as UID 1000, parents created, `overwrite: false` protects agent edits) — never as files in the mixin's own image layer, which would replace the workload's directory at that path, owner included.
 - Startup commands that need the workspace path take it from `WORKSPACE_DIR` (`env: [WORKSPACE_DIR]`) and guard with `${WORKSPACE_DIR:?...}` to fail loudly when unset.
@@ -31,8 +32,9 @@ Patterns this repo follows, plus rules inherited from the root [AGENTS.md](../AG
 - The built-in `shell` agent launches `bash -l` regardless of `/etc/passwd`; passwd-level default
   shells apply only where the shell is looked up (SSH, `su`). With a self-owned workload, the
   mixin-side lever for what the sandbox boots into is rewriting `/home/agent/entrypoint.sh` from an
-  install hook (the one way kits take the seam) — fish-shell boots `fish -l` that way, gated on its
-  `override_entrypoint` arg (default `true`); with `false` the workload's `bash -l` stays.
+  install hook (the one way kits take the seam) — fish-shell boots `fish -l` that way, opencode
+  `exec opencode`; each gates its write on its `override_entrypoint` arg, opt-in by convention
+  (default `false`), leaving the workload's `bash -l` when unset.
 - Kit sources carry no rationale comments: the *why* lives in the kit's lode entry and the commit
   body. Source comments are rare, at most a line or two, explain *why* only, and never narrate fix
   history.

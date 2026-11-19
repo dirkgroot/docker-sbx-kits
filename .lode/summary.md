@@ -4,8 +4,9 @@
 principle: a single generic **workload** — `extensible-shell`, a bare shell sandbox on
 `dhi.io/sbx-templates:shell-docker` whose `/home/agent/entrypoint.sh` is deliberately overridable —
 plus small focused **mixins** that compose on top. Agents are mixins too, installed via `mise`
-rather than dedicated workloads: `opencode` brings the OpenCode coding agent (`mise use -g
-opencode@2.2.7`) with an `opencode.ai` egress allow. Every kit is a directory with a
+rather than dedicated workloads: `opencode` brings the OpenCode coding agent via mise (version
+pinned by its `opencode_version` arg, default 2.3.2) with an `opencode.ai` egress allow and an
+opt-in `override_entrypoint` boot into the agent. Every kit is a directory with a
 `schemaVersion: 3` YAML manifest (header `# syntax=docker/sandbox-kit:3`) declaring typed
 `com.docker.sandbox/*` capabilities and the args they consume. The mixins: `agent-context` injects a
 personal `AGENTS.md`; `git-identity-sign` sets Git identity with SSH commit **signing** only —

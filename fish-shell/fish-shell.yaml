@@ -7,8 +7,8 @@ version: "1.0.0"
 
 args:
   override_entrypoint:
-    default: "true"
-    description: Overwrite the workload's entrypoint.sh to boot straight into fish. Set to false to leave the entrypoint to another kit.
+    default: "false"
+    description: Overwrite the workload's entrypoint.sh to boot straight into fish.
     enum: [ "true", "false" ]
 
 provides: [ "fish" ]

@@ -14,7 +14,7 @@ also ship a Dockerfile for staged installation.
 | [`agent-context/`](agent-context/)         | Injects a personal `AGENTS.md` into the agent config directory                | `agent-context@1`                 |
 | [`git-identity-sign/`](git-identity-sign/) | Configures Git identity with SSH commit signing                               | `ssh-agent@1`, `lifecycle@1`      |
 | [`mise-en-place/`](mise-en-place/)         | Installs and activates the `mise` tool manager                                | `network-policy@2`, `lifecycle@1` |
-| [`fish-shell/`](fish-shell/)               | Installs fish, makes it the `agent` user's login shell, and boots into it (`override_entrypoint`, default `true`) | `lifecycle@1`                     |
+| [`fish-shell/`](fish-shell/)               | Installs fish, makes it the `agent` user's login shell, with an opt-in boot into it (`override_entrypoint`, default `false`) | `lifecycle@1`                     |
 | [`fish-shell-config/`](fish-shell-config/) | Fish configuration drop-ins: colors, theme, key bindings, abbreviations       | `lifecycle@1`                     |
 | [`fish-shell-starship/`](fish-shell-starship/) | Installs the starship prompt and wires it into fish                       | `lifecycle@1`                     |
 | [`opencode/`](opencode/)                   | Installs the [OpenCode](https://opencode.ai/) coding agent via `mise`         | `network-policy@2`, `lifecycle@1` |

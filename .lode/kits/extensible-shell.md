@@ -17,7 +17,7 @@ preferably via [mise-en-place](mise-en-place.md).
 ```mermaid
 flowchart TD
     es["extensible-shell workload<br/>dhi.io/sbx-templates:shell-docker<br/>entrypoint.sh → bash -l"] --> m["mixins layer on top"]
-    m --> fs["fish-shell<br/>overrides entrypoint.sh → fish -l"]
+    m --> fs["fish-shell<br/>can override entrypoint.sh → fish -l"]
     m --> oc["opencode<br/>agent via mise"]
     m --> gi["git-identity-sign"]
     m --> me["mise-en-place"]
@@ -31,8 +31,9 @@ flowchart TD
   install hook running as `user: "1000"` that rewrites the file (truncation keeps it agent-owned;
   `chmod 0700` restores the mode) — hooks run in dependency order, so requirers write after
   providers and win, and lifecycle `files` must not touch the path (duplicate `files` paths are a
-  composition error). [fish-shell](fish-shell.md) boots into fish this way, gated on its
-  `override_entrypoint` arg (default `true`).
+  composition error). [fish-shell](fish-shell.md) (`fish -l`) and [opencode](opencode.md)
+  (`exec opencode`) take the seam this way, each gated opt-in on its `override_entrypoint` arg
+  (default `false`): a composition sets it `true` on exactly the one kit that should boot.
 - Base image `dhi.io/sbx-templates:shell-docker` carries the platform floor (`USER agent`,
   `WORKDIR /home/agent/workspace`).
 
