@@ -3,7 +3,10 @@
 **sbx-kits** is a personal collection of Docker Sandbox kits for the `sbx` CLI, organized around one
 principle: a single generic **workload** — `extensible-shell`, a bare shell sandbox on
 `dhi.io/sbx-templates:shell-docker` whose `/home/agent/entrypoint.sh` is deliberately overridable —
-plus small focused **mixins** that compose on top. Agents are mixins too, installed via `mise`
+plus small focused **mixins** that compose on top. The workload's Dockerfile adds the base tools
+every sandbox needs — vim via `apt-get` at build time (jq already ships in the platform floor;
+trixie's `yq` package is the wrong implementation, so it is deliberately absent). Agents are mixins
+too, installed via `mise`
 rather than dedicated workloads: `opencode` brings the OpenCode coding agent via mise (version
 pinned by its `opencode_version` arg, default 2.3.2) with an `opencode.ai` egress allow and an
 opt-in `auto_start` that starts the agent automatically. Every kit is a directory with a

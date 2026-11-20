@@ -1,6 +1,7 @@
 # Docker Sandbox Kits
 
-A personal collection of [Docker Sandbox](https://docs.docker.com/) kits: one extensible base workload and reusable mixins that customize
+A personal collection of [Docker Sandbox](https://docs.docker.com/) kits: one extensible base workload and reusable
+mixins that customize
 sandboxes built with the `sbx` CLI.
 
 ## Design
@@ -13,14 +14,14 @@ give the collection its shape.
 
 A sandbox boots from exactly one **workload**: the base image the host starts. This repo has exactly one,
 [`extensible-shell/`](extensible-shell/) — a bare shell sandbox on `dhi.io/sbx-templates:shell-docker` whose only
-opinion is an overridable `/home/agent/entrypoint.sh`. Everything else is a **mixin**: a small, focused layer that
-customizes the sandbox without owning it. Tools and agents are mixins too — [`opencode/`](opencode/) installs its
-agent through [`mise`](https://mise.jdx.dev/) rather than defining a second workload. Missing a tool? Write a mixin;
-never fork the workload.
+opinions are an overridable `/home/agent/entrypoint.sh` and a small set of base tools installed via `apt-get`.
+Everything else is a **mixin**: a small, focused layer that customizes the sandbox without owning it. Tools and agents
+are mixins too — [`opencode/`](opencode/) installs its agent through [`mise`](https://mise.jdx.dev/) rather than
+defining a second workload. Missing a specialized tool? Write a mixin; never fork the workload.
 
 ```mermaid
 flowchart TD
-    wl["extensible-shell (workload)<br/>bare shell + overridable entrypoint"]
+    wl["extensible-shell (workload)<br/>bare shell + base tools (vim)<br/>+ overridable entrypoint"]
     wl --> fs["fish-shell"]
     wl --> cfg["fish-shell-config"]
     wl --> st["fish-shell-starship"]
@@ -28,9 +29,9 @@ flowchart TD
     wl --> oc["opencode"]
     wl --> gi["git-identity-sign"]
     wl --> ac["agent-context"]
-    oc -->|requires mise-en-place| me
-    cfg -->|requires fish-shell| fs
-    st -->|requires fish-shell| fs
+    oc -->|requires mise - en - place| me
+    cfg -->|requires fish - shell| fs
+    st -->|requires fish - shell| fs
 ```
 
 ### The entrypoint is the seam
@@ -65,16 +66,16 @@ requirements never pull kits in behind your back. Customization of the sandbox i
 Each kit is a self-contained directory with a YAML manifest declaring capabilities and the args they consume. Some kits
 also ship a Dockerfile for staged installation.
 
-| Kit                                        | Purpose                                                                       | Capabilities                      |
-|--------------------------------------------|-------------------------------------------------------------------------------|-----------------------------------|
-| [`extensible-shell/`](extensible-shell/)   | **Workload:** bare shell sandbox with an overridable entrypoint               | —                                 |
-| [`agent-context/`](agent-context/)         | Injects a personal `AGENTS.md` into the agent config directory                | `agent-context@1`                 |
-| [`git-identity-sign/`](git-identity-sign/) | Configures Git identity with SSH commit signing                               | `ssh-agent@1`, `lifecycle@1`      |
-| [`mise-en-place/`](mise-en-place/)         | Installs and activates the `mise` tool manager                                | `network-policy@2`, `lifecycle@1` |
-| [`fish-shell/`](fish-shell/)               | Installs fish, makes it the `agent` user's login shell                        | `lifecycle@1`                     |
-| [`fish-shell-config/`](fish-shell-config/) | Fish configuration drop-ins: colors, theme, key bindings, abbreviations       | `lifecycle@1`                     |
-| [`fish-shell-starship/`](fish-shell-starship/) | Installs the starship prompt and wires it into fish                       | `lifecycle@1`                     |
-| [`opencode/`](opencode/)                   | Installs the [OpenCode](https://opencode.ai/) coding agent via `mise`         | `network-policy@2`, `lifecycle@1` |
+| Kit                                            | Purpose                                                                 | Capabilities                      |
+|------------------------------------------------|-------------------------------------------------------------------------|-----------------------------------|
+| [`extensible-shell/`](extensible-shell/)       | **Workload:** bare shell sandbox with vim and an overridable entrypoint | —                                 |
+| [`agent-context/`](agent-context/)             | Injects a personal `AGENTS.md` into the agent config directory          | `agent-context@1`                 |
+| [`git-identity-sign/`](git-identity-sign/)     | Configures Git identity with SSH commit signing                         | `ssh-agent@1`, `lifecycle@1`      |
+| [`mise-en-place/`](mise-en-place/)             | Installs and activates the `mise` tool manager                          | `network-policy@2`, `lifecycle@1` |
+| [`fish-shell/`](fish-shell/)                   | Installs fish, makes it the `agent` user's login shell                  | `lifecycle@1`                     |
+| [`fish-shell-config/`](fish-shell-config/)     | Fish configuration drop-ins: colors, theme, key bindings, abbreviations | `lifecycle@1`                     |
+| [`fish-shell-starship/`](fish-shell-starship/) | Installs the starship prompt and wires it into fish                     | `lifecycle@1`                     |
+| [`opencode/`](opencode/)                       | Installs the [OpenCode](https://opencode.ai/) coding agent via `mise`   | `network-policy@2`, `lifecycle@1` |
 
 ## Kit anatomy
 
@@ -91,8 +92,13 @@ also ship a Dockerfile for staged installation.
 
 ## Documentation
 
-- [Author kits](https://docs.docker.com/ai/sandboxes/customize/author/) — descriptor and Dockerfile layout, capabilities, lifecycle hooks
-- [Use kits](https://docs.docker.com/ai/sandboxes/customize/use-kits/) — running and combining kits with `sbx run` and `--kit`
-- [Build and distribute kits](https://docs.docker.com/ai/sandboxes/customize/author/distribute/) — publishing kit images to a registry
+- [Author kits](https://docs.docker.com/ai/sandboxes/customize/author/) — descriptor and Dockerfile layout,
+  capabilities, lifecycle hooks
+- [Use kits](https://docs.docker.com/ai/sandboxes/customize/use-kits/) — running and combining kits with `sbx run` and
+  `--kit`
+- [Build and distribute kits](https://docs.docker.com/ai/sandboxes/customize/author/distribute/) — publishing kit images
+  to a registry
 - [docker/sbx-kits-contrib](https://github.com/docker/sbx-kits-contrib) — Docker's community kit sources and kit spec
-- Tools shipped by these kits: [mise](https://mise.jdx.dev/), [fish](https://fishshell.com/), [starship](https://starship.rs/), [opencode](https://opencode.ai/)
+- Tools shipped by these
+  kits: [mise](https://mise.jdx.dev/), [fish](https://fishshell.com/), [starship](https://starship.rs/), [opencode](https://opencode.ai/);
+  the workload adds vim via `apt-get` (jq ships in the platform floor)

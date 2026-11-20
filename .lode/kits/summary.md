@@ -1,7 +1,9 @@
 # Kits — catalog
 
 sbx-kits follows a **compose-don't-specialize** model: one generic **workload** is the base of every
-sandbox and small focused **mixins** layer capabilities on top. Agents are mixins too — they install
+sandbox and small focused **mixins** layer capabilities on top. The workload's Dockerfile adds the
+base tools every sandbox needs (vim via `apt-get`; jq already ships in the platform floor). Agents
+are mixins too — they install
 their binary, preferably via mise — not dedicated workloads (the `pi` workload worked that way and
 was removed when this model landed).
 
@@ -20,7 +22,7 @@ was removed when this model landed).
 
 ```mermaid
 flowchart TD
-    wl["extensible-shell (workload)<br/>platform floor +<br/>/home/agent/entrypoint.sh → bash -l"]
+    wl["extensible-shell (workload)<br/>platform floor + base tools (vim)<br/>/home/agent/entrypoint.sh → bash -l"]
     wl --> fs["fish-shell<br/>fish binary + login shell<br/>entrypoint.sh → fish -l (auto_start)"]
     wl --> cfg["fish-shell-config<br/>conf.d drop-ins"]
     wl --> st["fish-shell-starship<br/>starship binary + fish init"]
@@ -50,7 +52,8 @@ mixin, say) writes last and wins.
   agent examples do); mixins should not.
 - Mixins overlay; workloads are the base. `sbx@1` is workload-only (the schema refuses it in a
   mixin's capabilities). extensible-shell declares no capabilities at all.
-- One generic workload per sandbox; never create a new workload for a tool or agent — write a mixin.
+- One generic workload per sandbox; never create a new workload for a tool or agent — base tools go
+  in the workload's Dockerfile, optional and specialized tools become mixins (installed via mise).
 - Every manifest carries a semver `version` field — assigned by the release workflow (planned), never bumped by hand in a kit change.
 
 Related: [../summary.md](../summary.md) · [../terminology.md](../terminology.md) · [../practices.md](../practices.md)

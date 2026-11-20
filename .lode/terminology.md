@@ -4,6 +4,7 @@ Short entries: **term — meaning**.
 
 - **Kit** — A reusable package that customizes a Docker Sandbox; one directory per kit, manifest at `<kit>/<kit>.yaml`. Kinds: `mixin` (overlay layer) and `workload` (base image the host boots).
 - **Workload** — The `kind` of the base kit a sandbox boots from; a sandbox takes exactly one. This repo has exactly one: `extensible-shell`.
+- **Base tools** — Generic tools every sandbox should have, installed in the workload's Dockerfile via `apt-get` at build time (vim; jq already ships in the platform floor at 1.8.2, and trixie's `yq` package is the wrong implementation). Optional and specialized tools are mixins installed via mise instead. See [kits/extensible-shell.md](kits/extensible-shell.md).
 - **Mixin** — A `kind` of kit that layers capabilities onto a sandbox instead of defining a base image. Agents and tools are mixins in this repo, not workloads.
 - **Manifest** — A kit's YAML file, opening with the `# syntax=docker/sandbox-kit:3` header, then the `# yaml-language-server:` modeline pointing at `docker/sandbox-kit-spec`'s `schema/kit.schema.json` (editor validation/completion), then `schemaVersion: "3"`, `kind`, `displayName`, `version`.
 - **Capability** — A typed unit of sandbox customization, id `com.docker.sandbox/<type>@<major>`, listed under `capabilities:`. Types in use: `agent-context@1`, `ssh-agent@1`, `lifecycle@1`, `network-policy@2`.

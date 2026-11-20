@@ -1,7 +1,8 @@
 # extensible-shell
 
-The repo's baseline **workload**: a bare, generic shell sandbox whose entrypoint is deliberately
-overridable, so mixins decide what the sandbox actually boots into.
+The repo's baseline **workload**: a bare, generic shell sandbox that carries a small set of base
+tools and whose entrypoint is deliberately overridable, so mixins decide what the sandbox actually
+boots into.
 
 - Source: `extensible-shell/extensible-shell.yaml` + `extensible-shell/extensible-shell.dockerfile`
 - Kind: `workload` (the repo's only one) · DisplayName: `Extensible shell` · version 1.0.0
@@ -37,9 +38,27 @@ flowchart TD
 - Base image `dhi.io/sbx-templates:shell-docker` carries the platform floor (`USER agent`,
   `WORKDIR /home/agent/workspace`).
 
+## Base tools
+
+The workload Dockerfile installs the generic tools every sandbox should have, via `apt-get` at
+build time (root; build-time egress is unrestricted — the same pattern as the fish-shell build
+stage):
+
+- **vim** — installed with `--no-install-recommends`, apt lists removed in the same layer.
+- **jq — not installed here.** The platform floor already ships jq 1.8.2 (current latest); an apt
+  install would risk shadowing it with trixie's older 1.7.x.
+- **yq — deliberately absent.** Debian trixie's `yq` package is the kislyuk Python implementation
+  (3.4.3), not the Go mikefarah/yq v4 the name usually means — dropped rather than ship the wrong
+  tool.
+
+Tool policy: base tools wanted in *every* sandbox live here; optional and specialized tools are
+mixins installed via [mise](mise-en-place.md).
+
 ## Invariants
 
-- The workload stays capability-free and tool-free; every capability or tool must come from a mixin.
+- The workload stays capability-free; capabilities always come from mixins. Its Dockerfile adds
+  only base tools — generic tools every sandbox needs — on top of the platform floor; optional or
+  specialized tools never land here.
 - The entrypoint must remain a plain script under `/home/agent` — that path choice is what makes
   mixin overrides possible.
 - Default `bash -l` keeps the sandbox usable with zero mixins.
