@@ -23,7 +23,7 @@ writes `exec opencode`.
 - **AGENTS.md (repo root)** — The Lode Coding method; instructions for agents working in this repo, not project docs.
 - **AGENTS.md (injected)** — The personal INTJ interaction rules written by the `agent-context` kit to `/home/agent/.config/opencode/AGENTS.md`.
 - **Lode** — `.lode/`, the AI-owned structured memory of this project (indexed by [lode-map.md](lode-map.md)).
-- **/etc/sandbox-persistent.sh** — Sandbox-wide env file sourced by every bash context (BASH_ENV, profile, bashrc); kits append env exports to it (e.g. `mise activate`, the fish `SHELL` export).
+- **/etc/sandbox-persistent.sh** — Sandbox-wide env file sourced by every bash context (BASH_ENV, profile, bashrc); kits append env exports to it (e.g. `mise activate`, the fish `SHELL` and `PAGER=less` exports).
 - **mise** — Polyglot dev-tool version manager (mise.jdx.dev) installed and activated by the `mise-en-place` kit; the preferred installer for agents and tools.
 - **opencode** — The OpenCode coding agent (opencode.ai), installed as a mixin via `mise use -g` at
   the version given by its `opencode_version` arg (default `2.3.2`); can boot the sandbox via its

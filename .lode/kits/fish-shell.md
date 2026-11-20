@@ -7,7 +7,7 @@ workload's entrypoint so the sandbox automatically starts fish.
 - Source: `fish-shell/fish-shell.yaml` + `fish-shell/fish-shell.dockerfile`
 - Kind: mixin · DisplayName: `Fish shell` · version 1.0.0
 - Args: `auto_start` (default `"false"`, enum `true`/`false`) — opt-in gate on the entrypoint override
-- Capabilities: `lifecycle@1` (three install hooks)
+- Capabilities: `lifecycle@1` (four install hooks)
 - Provides: `fish` (unversioned — the pin lives in the dockerfile `ARG`, not the manifest, mirroring [mise-en-place](mise-en-place.md)'s rationale)
 
 ## What it does
@@ -16,7 +16,12 @@ workload's entrypoint so the sandbox automatically starts fish.
    `usermod -s /usr/local/bin/fish agent`.
 2. **install (user 1000)**: exports `SHELL=/usr/local/bin/fish` in `/etc/sandbox-persistent.sh`
    (grep-guarded) — this is how the opencode harness picks fish for its terminal and shell tools.
-3. **install (user 1000)**: when `auto_start` is `true`, rewrites
+3. **install (user 1000)**: exports `PAGER=less` in `/etc/sandbox-persistent.sh` (grep-guarded) —
+   the base image ships `/usr/bin/less` but no Debian `pager` alternatives shim, while git's Debian
+   build defaults to `pager`, so interactive git fails with `unable to execute pager 'pager'`
+   without it. The export reaches every shell (bash login, fish login, the harness terminal), not
+   just fish sessions.
+4. **install (user 1000)**: when `auto_start` is `true`, rewrites
    `/home/agent/entrypoint.sh` to `fish -l` (`printf` + `chmod 0700`) — so a sandbox composed as
    extensible-shell + fish-shell automatically starts fish. Running as the agent user, truncating the
    workload's file keeps it agent-owned; the `chmod` restores mode 0700 even if the file had to be
