@@ -5,7 +5,7 @@ Mixin that ships the starship prompt binary and wires it into fish.
 - Source: `fish-shell-starship/fish-shell-starship.yaml` + `fish-shell-starship/fish-shell-starship.dockerfile`
 - Kind: mixin · DisplayName: `Starship prompt` · version 1.0.0
 - Capabilities: `lifecycle@1` (two `files` entries, no hooks)
-- Requires: `fish`
+- Requires: `fish-shell`
 
 ## What it does
 

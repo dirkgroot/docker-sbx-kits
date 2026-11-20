@@ -16,7 +16,7 @@ manager (egress `mise*.jdx.dev`); the old monolithic `fish-starship` kit is spli
 into `fish-shell` (fish binary + login shell + `fish -l` autostart gated by `auto_start`),
 `fish-shell-config` (conf.d drop-ins), and `fish-shell-starship` (starship binary + fish init). The
 repo-root `AGENTS.md` is not project documentation — it is the **Lode Coding** method governing
-every agent working here, including keeping this `.lode/` accurate. The folder is a git repository
-(branch `main`, no remote configured).
+every agent working here, including keeping this `.lode/` accurate. The folder is a git repository (branch `main`, remote
+`origin git@github.com:dirkgroot/docker-sbx-kits.git`).
 
 Related: [lode-map.md](lode-map.md) · [kits/summary.md](kits/summary.md)

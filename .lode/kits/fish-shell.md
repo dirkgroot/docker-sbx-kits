@@ -8,7 +8,7 @@ workload's entrypoint so the sandbox automatically starts fish.
 - Kind: mixin · DisplayName: `Fish shell` · version 1.0.0
 - Args: `auto_start` (default `"false"`, enum `true`/`false`) — opt-in gate on the entrypoint override
 - Capabilities: `lifecycle@1` (four install hooks)
-- Provides: `fish` (unversioned — the pin lives in the dockerfile `ARG`, not the manifest, mirroring [mise-en-place](mise-en-place.md)'s rationale)
+- Provides: `fish-shell` (unversioned — the pin lives in the dockerfile `ARG`, not the manifest, mirroring [mise-en-place](mise-en-place.md)'s rationale)
 
 ## What it does
 
@@ -61,7 +61,7 @@ ships only the binary (same pattern as [mise-en-place](mise-en-place.md)).
 
 ## Invariants
 
-- Sole provider of the `fish` capability name (`com.docker.kit/fish`): fish-shell-config and
+- Sole provider of the `fish-shell` capability name (`com.docker.kit/fish-shell`): fish-shell-config and
   fish-shell-starship declare `requires: ["fish-shell"]`, so this kit must be in the set for them to resolve.
 - fish must ship as a single self-contained binary; if a future release stops embedding
   `share/fish`, the dockerfile must ship that directory too.

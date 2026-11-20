@@ -5,7 +5,7 @@ Mixin that writes fish's user configuration. No binaries, no dockerfile — pure
 - Source: `fish-shell-config/fish-shell-config.yaml`
 - Kind: mixin · DisplayName: `Fish configuration` · version 1.0.0
 - Capabilities: `lifecycle@1` (four `files` entries, no hooks)
-- Requires: `fish`
+- Requires: `fish-shell`
 
 ## Files written (UID 1000, all `overwrite: false`)
 
