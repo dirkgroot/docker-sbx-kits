@@ -33,4 +33,5 @@ capabilities:
               printf '#!/usr/bin/env bash\nexec opencode\n' > /home/agent/entrypoint.sh
               chmod 0700 /home/agent/entrypoint.sh
             fi
+          description: Write the opencode entrypoint override when auto_start is enabled
           user: "1000"

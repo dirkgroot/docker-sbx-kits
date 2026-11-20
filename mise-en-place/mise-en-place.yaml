@@ -16,7 +16,9 @@ capabilities:
     config:
       install:
         - command: "mise activate >> /etc/sandbox-persistent.sh"
+          description: Activate mise in the persistent environment
           user: "1000"
       startup:
         - command: [ 'sh', '-c', '"mise" trust "${WORKSPACE_DIR:?WORKSPACE_DIR is not set}"' ]
+          description: Trust the workspace directory for mise
           env: [ WORKSPACE_DIR ]

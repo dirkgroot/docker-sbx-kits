@@ -26,8 +26,14 @@ capabilities:
     config:
       startup:
         - command: [ 'sh', '-c', 'git config set --global init.defaultBranch main' ]
+          description: Set the default branch to main
         - command: [ 'sh', '-c', 'git config set --global commit.gpgsign true' ]
+          description: Enable commit signing
         - command: [ 'sh', '-c', 'git config set --global gpg.format ssh' ]
+          description: Sign commits with SSH
         - command: [ 'sh', '-c', 'git config set --global user.name "${{ kit.args.git_user_name }}"' ]
+          description: Set the Git user name
         - command: [ 'sh', '-c', 'git config set --global user.email "${{ kit.args.git_user_email }}"' ]
+          description: Set the Git user email
         - command: [ 'sh', '-c', 'git config set --global user.signingKey "${{ kit.args.git_user_signingKey }}"' ]
+          description: Set the SSH signing key
