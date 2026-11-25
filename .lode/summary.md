@@ -4,7 +4,8 @@
 principle: a single generic **workload** — `extensible-shell`, a bare shell sandbox on
 `dhi.io/sbx-templates:shell-docker` whose `/home/agent/entrypoint.sh` is deliberately overridable —
 plus small focused **mixins** that compose on top. The workload's Dockerfile adds the base tools
-every sandbox needs — vim via `apt-get` at build time (jq already ships in the platform floor;
+every sandbox needs — vim via `apt-get` at build time, under `sudo` because the base image builds as
+the non-root agent user (jq already ships in the platform floor;
 trixie's `yq` package is the wrong implementation, so it is deliberately absent). Agents are mixins
 too, installed via `mise`
 rather than dedicated workloads: `opencode` brings the OpenCode coding agent via mise (version

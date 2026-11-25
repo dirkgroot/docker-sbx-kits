@@ -41,8 +41,12 @@ flowchart TD
 ## Base tools
 
 The workload Dockerfile installs the generic tools every sandbox should have, via `apt-get` at
-build time (root; build-time egress is unrestricted — the same pattern as the fish-shell build
-stage):
+build time. The commands run under `sudo`: an upstream update of `dhi.io/sbx-templates:shell-docker`
+left the image built for the non-root agent user, and bare `apt-get` fails the build with
+permission denied. Build-time egress is unrestricted — the same pattern as the fish-shell build
+stage. The entrypoint write below needs no `sudo` because it touches agent-owned paths under
+`/home/agent`. (Note: this `sudo` rule is Dockerfile-build-only — lifecycle hooks still must never
+use `sudo`, see [../practices.md](../practices.md).)
 
 - **vim** — installed with `--no-install-recommends`, apt lists removed in the same layer.
 - **jq — not installed here.** The platform floor already ships jq 1.8.2 (current latest); an apt
